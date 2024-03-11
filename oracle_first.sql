@@ -98,7 +98,7 @@ SELECT * FROM emp WHERE sal NOT IN (1300,2450,3000);
 SELECT ename,mgr,deptno  FROM emp WHERE ename IN ('ALLEN' , 'FORD');
 SELECT ename,mgr,deptno  FROM emp WHERE ename NOT IN ('ALLEN' , 'FORD');
 
-[실습 문제]
+[실습]
 1. emp 테이블에서 사원번호가 7698인 사원의 이름, 업무, 급여를 출력하시오.
 2. emp 테이블에서 사원 이름이 SMITH인 사람의 이름과 월급 부서번호를 구하시오.
 3. emp테이블에서 월급이 2500 이상 3500 미만인 사원의 이름, 입사일, 월급을 구하시오.
