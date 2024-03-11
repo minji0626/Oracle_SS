@@ -78,3 +78,4 @@ SELECT * FROM emp WHERE hiredate < '81-12-03';
 SELECT ename, sal, sal*12 ansal FROM emp WHERE  sal*12 > 15000;
 
 SELECT * FROM emp WHERE hiredate != '80-12-17'; 
+80년 12월 17일 입사자를 제외하고 나머지 입사자 출력
