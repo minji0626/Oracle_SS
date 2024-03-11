@@ -25,5 +25,8 @@ SELECT 7 + 10 FROM dual;
 select ename,sal from emp;
 select ename, sal, sal + 300 from emp;
 
-null값의 정의 : null은 사용할 수 없거나, 할당되지 않았거나, 알 수 없거나, 적용할 수 없는 값
-               (null은 0이나 공백과 다름)
+null값의 정의 : null은 사용할 수 없거나, 할당되지 않았거나, 알 수 없거나, 적용할 수 없는 값 (null은 0이나 공백과 다름)   
+SELECT empno,ename,job,comm FROM emp;
+
+산술식의 NULL값 : NULL 값을 포함하는 산술식은  NULL로 계산
+SELECT ename, (sal+comm)*12 FROM emp; 
