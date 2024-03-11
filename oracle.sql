@@ -15,3 +15,8 @@ DUAL:함수 및 계산의 결과를 볼 때 사용할 수 있는 공용(public) 테이블
       사용자 데이터가 있는 테이블에서 유래하지 않은 상수 값
       의사열(pesudo-coumn), 표현식 등의 값을 단 한번만 돌리거나 현재 날짜,
       시각을 알고자 할 때 이용. 일시적인 산술, 날짜 연산 등에 주로 사용
+
+SELECT SYSDATE FROM dual;
+SELECT ASCII('A') FROM dual;
+SELECT ASCII(0) FROM dual;
+SELECT 7 + 10 FROM dual;
