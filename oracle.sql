@@ -30,3 +30,20 @@ SELECT empno,ename,job,comm FROM emp;
 
 산술식의 NULL값 : NULL 값을 포함하는 산술식은  NULL로 계산
 SELECT ename, (sal+comm)*12 FROM emp; 
+
+열 ALIAS : 열의 별칭
+열 이름 바로 뒤에 나옴. 열 이름과 ALIAS 사이에 선택사항인 AS 키워드가 올 수 있음
+알리아스에 큰따옴표를 사용하는 경우
+- 대소문자 구별을 원할 때
+- 공백 포함시
+- _,# 등 특수문자 사용시(_는 ""없이 중간에는 올 수 있으나 맨 앞에 오면 오류 발생)
+- 숫자로 시작할 경우 
+SELECT sal*12 ASal FROM emp;
+SELECt sal*12 AS AsAl FROM emp;
+SELECT sal*12 "Annual Salary" FROM emp;
+
+연결 연산자 : 열이나 문자열을 다른 열에 연결, 두개의 세로선(||)으로 나타냄 결과 열로 문자식을 생성
+SELECT ename || ' has $' || sal FROM emp;
+
+연결 연산자와 null 값: 문자열에 nulll값을 결합할 경우 결과는 문자열
+SELECT ename || comm From emp;
