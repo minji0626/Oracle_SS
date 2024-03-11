@@ -76,3 +76,5 @@ SELECT * FROM emp WHERE hiredate > '81-12-03' ;
 SELECT * FROM emp WHERE hiredate < '81-12-03';
 // 81년 12월 3일 이전의 입사자
 SELECT ename, sal, sal*12 ansal FROM emp WHERE  sal*12 > 15000;
+
+SELECT * FROM emp WHERE hiredate != '80-12-17'; 
