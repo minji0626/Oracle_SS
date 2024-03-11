@@ -62,7 +62,17 @@ SELECT empno , ename, sal FROM emp;
 
 SELECT ename AS "이 름" , sal AS "월 급" FROM emp;
 
-SELECT empno AS "사원번호",  ename AS "사원이름" , sal AS  "월급" , (sal*12) AS "연봉" FROM emp;
+SELECT empno "사원번호",  ename "사원이름" , sal  "월급" , (sal*12) "연봉" FROM emp;
 
 SELECT DISTINCT job FROM emp; 
 
+WHERE절 사용 : 조건 체크 결과 행 제한하기
+                       // (주의) ALIAS 사용 불가
+                        
+SELECT * FROM emp WHERE deptno = 10;
+SELECT ename, job, deptno FROM emp WHERE ename = 'SMITH';
+SELECT * FROM emp WHERE hiredate > '81-12-03' ; 
+//81년 12월 3일 이후의 입사자
+SELECT * FROM emp WHERE hiredate < '81-12-03';
+// 81년 12월 3일 이전의 입사자
+SELECT ename, sal, sal*12 ansal FROM emp WHERE  sal*12 > 15000;
