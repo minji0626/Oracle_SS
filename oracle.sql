@@ -20,3 +20,10 @@ SELECT SYSDATE FROM dual;
 SELECT ASCII('A') FROM dual;
 SELECT ASCII(0) FROM dual;
 SELECT 7 + 10 FROM dual;
+
+연산
+select ename,sal from emp;
+select ename, sal, sal + 300 from emp;
+
+null값의 정의 : null은 사용할 수 없거나, 할당되지 않았거나, 알 수 없거나, 적용할 수 없는 값
+               (null은 0이나 공백과 다름)
