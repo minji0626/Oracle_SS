@@ -47,3 +47,22 @@ SELECT ename || ' has $' || sal FROM emp;
 
 연결 연산자와 null 값: 문자열에 nulll값을 결합할 경우 결과는 문자열
 SELECT ename || comm From emp;
+
+DISTINCT :중복행 삭제
+SELECT DISTINCT deptno FROM emp;
+
+[실습 문제]
+1. emp 테이블에서 사원번호, 사원 이름, 월급을 출력하시오
+2. emp 테이블에서 사원이름과 월급을 출력하는데 컬럼 명은 "이 름" ,  "월 급"으로 바꿔서 출력
+3. emp테이블에서 사원 번호, 사원 이름, 월급, 연봉을 구하고 각각 칼럼명은
+"사원번호" , "사원이름" "월급" "연봉"
+4. emp 테이블의 업무를 중복되지 않게 표시하시오
+
+SELECT empno , ename, sal FROM emp;
+
+SELECT ename AS "이 름" , sal AS "월 급" FROM emp;
+
+SELECT empno AS "사원번호",  ename AS "사원이름" , sal AS  "월급" , (sal*12) AS "연봉" FROM emp;
+
+SELECT DISTINCT job FROM emp; 
+
