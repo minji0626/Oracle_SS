@@ -108,3 +108,31 @@
    SELECT ename, sal ,deptno FROM emp WHERE ename = 'SMITH';
    SELECT ename, hiredate, sal FROM emp WHERE sal >= 2500 AND sal < 3500 ;
    SELECT ename, job, sal FROM emp WHERE sal BETWEEN 2000 AND 3000;
+   
+   LIKE : 패턴과 일치하는 데이터를 검색
+%는 0개 이상의 문자를 나타냄
+_는 한 문자를 나타냄
+
+S가 처음, 중간, 끝에 오는 이름을 검색
+SELECT * FROM emp WHERE ename LIKE '%S%'; 
+SELECT * FROM emp WHERE ename NOT LIKE '%S%';
+
+입사일이 22로 끝나는 사원 정보 구하기
+SELECT ename, hiredate FROM emp WHERE hiredate LIKE '%22';
+
+FOR다음에 정해지지 않은 한 문자를 가진 사람을 불러오기
+SELECT * FROM emp WHERE ename LIKE 'FOR_';
+
+한 글자 다음의 M, M다음에 없거나 여러개
+SELECT * FROM emp WHERE ename LIKE '_M%';
+
+
+SELECT * FROM emp WHERE ename LIKE'SC\_%' ESCAPE '\';
+검색하고자 하는 문자열에 _가 포함되어 있으면 _ 앞에 \를 붙이고 escape \를 명시해준다.
+SELECT * FROM emp WHERE ename like '%\%' ESCAPE '\';
+검색하고자 하는 문자열에 %가 포함되어 있을 경우
+
+NULL 조건 사용
+사원들 중 comm 계약을 안 맺은 사람 구하기
+select * from emp where comm is null;
+select * from emp where comm is not null;
