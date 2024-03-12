@@ -260,3 +260,48 @@ SELECT TRIM (BOTH 'h' FROM 'hahchh') FROM dual;
 
 LTRIM : 문자열의 왼쪽에서 공백이나 특정 문자를 제거한 다음 값을 반환
 RTRIM : 문자열의 오른쪽에서 공백이나 특정 문자를 제거한 다음 값을 반환
+
+REPLACE (대상문자열,OLD,NEW) : 대상문자열에서 OLD 문자를 NEW 문자로 대체
+SELECT REPLACE ('010.1234.5678' , '.' , '-') FROM dual;
+
+함수 중첩
+SELECT ename , LOWER(SUBSTR(ename,1,3)) FROM emp;
+
+[실습 문제]
+1. EMP 테이블에서 업무의 첫글자는 대문자 나머지는 소문자로 출력하시오.
+2. EMP 테이블에서 사원 이름중 A가 포함된 사원이름을 구하고 그 이름 중 앞에서 3글자만 추출하여 출력하시오.
+3. EMP 테이블에서 이름의 3번째가 문자가 A인 모든 사원의 이름을 표시하시오.
+4. EMP 테이블에서 이름이 J, A, M으로 시작하는 모든 사원의 이름[첫 글자는 대문자로 나머지는 소문자] 및 이름의 길이를 표시하시오.
+   [열 레이블은 name, length로 표시]
+
+SELECT INITCAP (job) FROM emp;
+
+SELECT SUBSTR ( ename, 1 , 3) FROM emp WHERE ename LIKE '%A%';
+
+SELECT ename FROM emp WHERE ename LIKE '__A%' ;
+SELECT ename FROM emp WHERE SUBSTR( name, 3, 1) = 'A' ;
+
+SELECT INITCAP (ename) name, LENGTH (ename) length FROM emp WHERE (ename LIKE 'J%' OR ename LIKE 'A%' OR ename LIKE 'M%');
+SELECT INITCAP (ename) name, LENGTH (ename) length FROM emp WHERE SUBSTR ( ename , 1 , 1) IN( 'J' , 'A', 'M') ;
+
+
+숫자 함수
+
+CEIL (실수) : 올림 처리한 정수값을 반환
+SELECT CEIL(1.4) FROM dual;
+
+FLOOR(실수) : 버림 처리한 정수 값을 반환
+SELECT FLOOR (1.7) FROM dual;
+
+ROUND (대상숫자, 지정자릿수) : 반올림
+SELECT ROUND (45.926 , 2) FROM dual;
+SELECT ROUND (45.926) FROM dual;
+
+SELECT empno , ename , sal , ROUND(sal * 1.15) "New Salary" , ROUND(sal* 1.15) - sal "Increase" FROM emp;
+
+
+
+
+
+
+
