@@ -208,3 +208,46 @@ SELECT empno, ename, hiredate FROM emp ORDER BY hiredate ASC;
 SELECT ename, sal, sal*12 FROM emp ORDER by sal*12 DESC;
 SELECT ename, deptno FROM emp WHERE deptno IN(10 , 20) ORDER BY ename ASC; 
 SELECT ename, sal, comm FROM emp WHERE comm IS NOT null ORDER BY comm DESC;
+
+함수
+
+문자 함수
+대소문자 조작 함수 - LOWER, UPPER, INITCAP
+SELECT LOWER('HELLO') FROM dual;
+SELECT LOWER(ename) FROM emp;
+
+SELECT UPPER ('hello')  FROM dual;
+
+문장의 첫 글자를 대문자로 변경, 그 다음은 소문자
+SELECT INITCAP('hello wORLD') FROM dual;
+
+문자 조작 함수
+CONCAT(문자열1, 문자열2) : 문자열 1과 문자열2를 연결하여 하나의 문자열로 반환
+SELECT CONCAT('Hello' , 'World') FROM dual;
+SELECT CONCAT (ename , job)  FROM emp;
+
+SUBSTR(대상문자열, 인덱스) : 대상문자열에서 지정한 인덱스부터 문자열을 추출 [주의] 인덱스 1부터 시작
+SELECT SUBSTR ('Hello World' , 3) FROM dual;
+SELECT SUBSTR ('Hello World' ,3,3) FROM dual; -- 인덱스 3부터 문자 3개 추출
+SELECT SUBSTR ('Hello World',-3) FROM dual;  -- 뒤에서 3번째부터 끝까지 추출
+SELECT SUBSTR ('Hello World',-3,2) FROM dual; -- 뒤에서 3번째부터 문자 2개 추출
+
+LENGTH(대상문자열) : 문자열의 개수
+SELECT LENGTH ('Hello World') FROM dual;
+SELECT LENGTH (ename)   FROM emp;
+
+INSTR (대상문자열, 검색 문자) : 검색문자의 위치값 검색
+SELECT INSTR('Hello World' , 'e' ) FROM dual;
+검색 문자가 없을 경우 0 반환
+SELECT INSTR('Hello World','E') FROM dual;
+
+SELECT INSTR ('Hello World','o') FROM dual;
+SELECT INSTR ('Hello World','o',6) FROM dual;
+SELECT INSTR ('Hello World','o',1,2) FROM dual;
+
+LPAD(대상문자열, 총길이, 문자) : 지정한 길에 문자열을 출력하는데 공백은 왼쪽에 지정한 문자로 채움
+SELECT LPAD ('HELLO', 10 , '*' ) FROM dual;
+
+RPAD(대상문자열, 총길이, 문자) : 지정한 길에 문자열을 출력하는데 공백은 오른쪽에 지정한 문자로 채움
+SELECT RPAD ('HELLO', 10 , '*' ) FROM dual;
+
