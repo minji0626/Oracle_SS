@@ -251,3 +251,12 @@ SELECT LPAD ('HELLO', 10 , '*' ) FROM dual;
 RPAD(대상문자열, 총길이, 문자) : 지정한 길에 문자열을 출력하는데 공백은 오른쪽에 지정한 문자로 채움
 SELECT RPAD ('HELLO', 10 , '*' ) FROM dual;
 
+
+TRIM :  문자열에서 공백이나 특정 문자를 제거한 다음에 다음 값을 반환
+방향 : 왼쪽 -> LEADING ,  오른쪽 -> TRAILING , 양쪽 -> BOTH <- DEFAULT
+SELECT TRIM (LEADING 'h' FROM 'habchh') FROM dual;
+SELECT TRIM (TRAILING 'h' FROM 'habchh') FROM dual;
+SELECT TRIM (BOTH 'h' FROM 'hahchh') FROM dual;
+
+LTRIM : 문자열의 왼쪽에서 공백이나 특정 문자를 제거한 다음 값을 반환
+RTRIM : 문자열의 오른쪽에서 공백이나 특정 문자를 제거한 다음 값을 반환
