@@ -136,3 +136,75 @@ NULL 조건 사용
 사원들 중 comm 계약을 안 맺은 사람 구하기
 select * from emp where comm is null;
 select * from emp where comm is not null;
+
+논리 연산자(AND, OR, NOT)를 사용하여 조건 정의
+AND 연산자의 사용 : 구성 요소 조건이 모두 TRUE이면 TRUE를 반환
+SELECT empno, ename, job, sal From emp WHERE sal >= 2000 AND job LIKE  '%MAN%'; 
+사원 번호, 이름, 업무, 급여를 불러오세요 그러나 급여는 2000이상이고 업무에는 MAN이 들어가야합니다.
+
+OR 연산자의 사용 : 조건 중 하나가 TRUE면 TRUE를 반환
+SELECT empno, ename, job, sal FROM emp WHERE sal>=2000 OR job LIKE '%MAN%';
+사원 번호, 이름 , 업무, 급여를 출력하세요 급여가 2000이상이거나 업무에 MAN이 들어간다면
+
+NOT 연산자의 사용
+SELECT ename, job FROM emp WHERE job NOT IN ('CLERK' , 'SALESMAN');
+사원이름과 업무를 출력하세요 그러나 업무가 CLERK, SALESMAN인 사람들은 제외시키세요
+
+[실습 문제]
+1. EMP 테이블에서 81년 05월 01일과 81년 12월 03일 사이에 입사한 사원의 이름, 급여, 입사일을 출력하세요
+2. EMP 테이블에서 사원 번호가 7566. 7782, 7934인 사원을 제외한 사람들의 사원번호, 이름, 월급을 출력하세요.
+3. EMP 테이블에서 급여가 $2,000와 $5,000사이고 부서 번호가 10 또는 30인 사원의 이름과 급여, 부서번호를 출력하세요.
+4. EMP 테이블에서 업무가 SALESMAN 또는 MANAGER이면서 급여가 $1,600 , $2,975 , $2,850이 아닌 모든 사원이름, 업무, 급여를 표시하세요.
+
+SELECT ename, sal, hiredate FROM emp  WHERE hiredate BETWEEN '81-05-01' AND '81-12-03';
+SELECT empno, ename, sal FROM emp WHERE empno NOT IN (7566 , 7782, 7934);
+SELECT ename, sal, deptno FROM emp WHERE (sal >= 2000 AND sal <=5000) AND deptno IN (10, 30); 
+SELECT ename, job, sal FROM emp WHERE job IN ('SALESMAN' ,  'MANAGER') AND sal NOT IN (1600, 2975, 2850);
+
+
+ORDER BY 절 : 정렬
+SELECT * FROM emp WHERE deptno = 10 ORDER BY sal ASC;
+SELECT * FROM emp WHERE deptno = 10 ORDER BY sal DESC;
+SELECT * FROM emp WHERE deptno = 10 ORDER BY sal, ename;
+SELECT * FROM emp WHERE deptno = 10 ORDER BY sal ASC , ename DESC; 
+
+내림차순 정렬
+SELECT ename, job, deptno, hiredate FROM emp ORDER BY hiredate DESC;
+
+1차 정렬에서 중복값이 있을 경우 2차 정렬 수행
+SELECT * FROM emp ORDER BY sal DESC, ename DESC;
+
+날짜 정렬
+SELECT ename, job, deptno, hiredate FROM emp ORDER BY hiredate DESC;
+
+열 ALIAS를 기준으로 정렬
+SELECT empno, ename, (sal*12) annsal FROM emp ORDER BY annsal;
+
+열의 숫자 위치를 사용하여 정렬
+SELECT ename, job, deptno, hiredate FROM emp ORDER BY 3;
+
+테이블에 생성된 순서대로 열 숫자 위치 부여
+SELECT * FROM emp ORDER BY 2;
+
+NULL값을 갖고 있는 칼럼을 정렬할 떄
+NULLS FIRST 또는 NULLS LAST 키워드를 사용하여 반환된 행 중
+NULL 값을 포함하는 행이 정렬 순서상 맨 처으멩 나타나거나 마지막에 나타나도록 지정
+SELECT * FROM emp ORDER BY comm NULLS FIRST;
+SELECT * FROM emp ORDER BY comm NULLS LAST;
+
+SELECT * FROM emp ORDER BY comm NULLS LAST, ename DESC;
+SELECT * FROM emp ORDER BY comm DESC NULLS FIRST;
+
+여러 열을 기준으로 정렬
+SELECT ename, deptno, sal FROM emp ORDER BY deptno, sal DESC;
+
+[실습 문제]
+1. 사원 번호, 사원 이름, 입사일을 출력하는데 입사일이 빠른 사람순으로정렬하시오.
+2. 사원 이름, 급여, 연봉을 구하고 연봉이 많은 순으로 정렬하시오.
+3. 10번 또는 20번 부서에서 근무하고 있는 사원의 이름과 부서 번호를 출력하는데 이름을 영문자순으로 표시하시오.
+4. 커미션 계약을 맺은 모든 사원의 이름, 급여, 커미션을 출력하는데 커미션을 기준으로 내림차순 정렬하시오.
+
+SELECT empno, ename, hiredate FROM emp ORDER BY hiredate ASC; 
+SELECT ename, sal, sal*12 FROM emp ORDER by sal*12 DESC;
+SELECT ename, deptno FROM emp WHERE deptno IN(10 , 20) ORDER BY ename ASC; 
+SELECT ename, sal, comm FROM emp WHERE comm IS NOT null ORDER BY comm DESC;
