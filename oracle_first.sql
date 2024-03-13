@@ -616,10 +616,26 @@ SELECT e.ename , d.dname FROM emp e, dept d WHERE e.deptno = d.deptno AND e.enam
 SELECT e.ename , e.sal, d.dname FROM emp e, dept d WHERE e.deptno = d.deptno AND e.sal BETWEEN 3000 AND 4000;
 
 
-비동등 조인[non equi join] : 테이블의 어떤 칼럼도 조인할 테이블의 칼럼에 일치하지 않을 때 사용하고 조인 조건은 동등(=)이외의 연산자를 갖음.(between and, is null, is not null, in, not in)
+비동등 조인[Non Equi JOIN] : 테이블의 어떤 칼럼도 조인할 테이블의 칼럼에 일치하지 않을 때 사용하고 조인 조건은 동등(=)이외의 연산자를 갖음.(between and, is null, is not null, in, not in)
+
+사원 이름, 급여, 급여 등급 구하기 (emp , salgrade 테이블 이용)
+SELECT e.ename, e.sal, s.grade FROM emp e, salgrade s WHERE e.sal BETWEEN s.losal AND s.hisal;  
+
+Self JOIN : 동일한 테이블 조인
+사원 이름과 해당 사원의 관리자 이름 구하기 (관리자가 없는 사원 제외)
+SELECT e.ename "사원 이름", m.ename "관리자 이름"FROM emp e, emp m WHERE e.mgr = m.empno;
+
+ 외부 조인 [Outer Join] : Equi Join 문장들의 한 가지 제약점은 그것들이 조인을 생성하려 하는 두 개의 테이블의 두 개 컬럼에서 
+                              공통된 값이 없다면 테이블로부터 데이터를 반환하지 않는다는 것 
+                              정상적으로 조인 조건을 만족하지 못 하는 행들을 보기위해 Outer Join을 사용
+                              
 
 
+누락된 행을 표시하기 위해서 누락된 행이 있는 테이블의 반대 테이블의 조인 조건에 + 명시
+SELECT DISTINCT (e.deptno), d.deptno FROM emp e, dept d WHERE e.deptno (+)= d.deptno;
 
+사원 이름과 해당 사원의 관리자 이름 구하기 (관리자가 없는 사원도 표시)
+SELECT DISTINCT(e.ename) "사원 이름" , m.ename "관리자 이름" FROM emp e, emp m WHERE m.empno (+)= e.mgr;
 
 
 
