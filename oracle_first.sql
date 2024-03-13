@@ -476,3 +476,84 @@ SELECT ename, sal, job,
                                                       'F' ) "Grade"
    FROM emp;
 
+[실습 문제]
+1. EMP 테이블에서 사원 이름, 월급, 월급과 커미션을 더한 값을 컬럼명 실급여라고 해서 출력하세요.
+   단 , NULL 값은 나타나지 않게 작성하세요.
+2. EMP 테이블에서 월급과 커미션을 합친 금액이 2000 이상인 급여를 받는 사원의 이름, 업무, 월급, 커미션, 고용날짜를 출력하세요.
+   단, 고용 날짜는 1980 - 12 - 17 형태로 출력하세요.
+
+SELECT ename, sal,  ( sal + NVL ( comm , 0 ) ) AS "실급여" FROM emp;
+SELECT ename, job, sal, comm, TO_CHAR ( hiredate , 'YYYY-MM-DD') "hiredate"FROM emp WHERE ( sal + NVL ( comm , 0 ) ) >= 2000;
+
+그룹 함수 : 행 집합 연산을 수행하여 그룹별로 하나의 결과를 산출
+
+AVG() : NULL을 제외한 모든 값들의 평균을 반환. NULL값은 평균 계산에서 무시됨
+SELECT AVG(sal)   FROM emp;
+SELECT ROUND ( AVG(sal)) FROM emp;
+
+COUNT() : NULL을 제외한 값을 가진 모든 레코드의 수를 반환. COUNT(*) 형식을 사용하면 NULL도 계산에 포함
+SELECT COUNT (empno) FROM emp;
+SELECT COUNT (comm) FROM emp;
+SELECT COUNT(*) FROM emp;
+
+MAX () : 레코드 내에 있는 여러 값 중 가장 큰 값을 반환
+SELECT MAX (sal) FROM emp;
+SELECT MAX (ename) FROM emp;
+SELECT MAX (hiredate) FROM emp;
+
+MIN () : 레코드 내에 있는 여러 값 중 가장 작은 값을 반환
+SELECT MIN(sal) FROM emp;
+SELECT MIN (ename) FROM emp;
+SELECT MIN(hiredate) FROM emp;
+
+SUM() : 레코드들이 포함하고 있는 모든 값을 더하여 반환
+SELECT SUM(sal) FROM emp;
+
+SELECT MAX(sal) 최대 ,MIN(sal) 최소 , ROUND(AVG(sal)) 평균 , SUM(sal) 합계 FROM emp;
+SELECT MAX(sal), MIN (sal), ROUND(AVG(sal)) , SUM(sal) FROM emp WHERE deptno = 10;
+SELECT COUNT(*) FROM emp WHERE deptno = 20;
+
+GROUP BY : SELECT절에 집합함수 적용시 개별 컬럼을 지정할 수 없음.
+                 개별 컬럼을 지정할 경우에는 반드시 GROUP BY 절에 지정된 컬럼만 가능하다.
+                 
+SELECT deptno, MAX(sal) FROM emp GROUP BY deptno;
+SELECT deptno, MAX(sal) FROM emp GROUP BY deptno ORDER BY deptno;
+
+부서별로 사원 수 구하기
+SELECT deptno , COUNT(empno) FROM emp GROUP BY deptno ORDER BY deptno;
+SELECT * FROM emp;
+SELECT COUNT(empno) ,job FROM emp GROUP BY job;
+
+다중 열에서 GROUP BY 절 사용하기
+SELECT deptno , job, SUM(sal) FROM emp GROUP BY deptno, job ORDER BY deptno;
+
+그룹함수를 사용한 잘못된 Query
+
+HAVING : 그룹함수를 이용해서 조건 체크할 때 사용 알리아스 사용 불가능
+[오류 발생]
+SELECT deptno , AVG(sal) FROM emp WHERE AVG(sal) >= 2000 GROUP BY deptno; -- WHERE 에 그룹 함수를 이용해서 조건을 체크하면 오류 발생
+[정상 구문]
+SELECT deptno, AVG(sal) FROM emp GROUP BY deptno HAVING AVG(sal) >= 2000;
+               
+부서별로 최대 급여를 구하는데 3000을 초과한 최대 급여를 구하세요.
+SELECT deptno, MAX(sal) FROM emp GROUP BY deptno HAVING MAX(sal) > 3000 ;
+
+그룹 함수 중첩 
+SELECT MAX(AVG(sal)) FROM emp GROUP BY deptno;
+
+분기별로 입사한 사원의 수 
+SELECT TO_CHAR (hiredate , 'Q') "분기" , COUNT(ename) "사원 수" FROM emp GROUP BY TO_CHAR (hiredate , 'Q') ORDER BY "분기";
+
+[실습 문제]
+1. 모든 사원의 급여 최고액, 최저액, 총액 및 평균액을 표시하시오.
+   레이블을 각각 MAXIMUM,MINIMUM,SUM,AVERAGE로 지정하고
+   결과를 정수로 반올림하고 세 자리 단위로 ,를 명시하세요.
+2. 급여와 커미션을 더한 금액의 최고, 최저, 평균 금액을 구하시오.
+   평균 금액은 소수점 첫째 자리까지 표시하시오.
+3. 업무와 업무가 동일한 사원의 수를 표시하세요.
+   업무별 사원 수를 구하세요.
+   
+SELECT MAX(sal) "Maximum" , MIN(sal) "Minimum" , TO_CHAR(SUM(sal) , '99,999') "Sum" , TO_CHAR (ROUND(AVG(sal)), '9,999') "Average" FROM emp;   
+SELECT MAX( sal + NVL ( comm , 0 )) "Max", MIN( sal + NVL ( comm , 0 )) "Min", TRUNC(AVG( sal + NVL ( comm , 0 )) , 1) "Avg" FROM emp;
+SELECT COUNT(ename), job FROM emp GROUP BY job ORDER BY job;
+
