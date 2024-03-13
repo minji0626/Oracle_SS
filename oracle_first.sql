@@ -418,3 +418,61 @@ SELECT TO_NUMBER('100' , 999) FROM dual;
 9) SELECT ename, ROUND( MONTHS_BETWEEN (SYSDATE , hiredate) ) AS MONTHS_WORKED FROM emp  ORDER BY MONTHS_WORKED ASC ;
 10) SELECT LOWER(ename) , job, TRUNC ( (SYSDATE - hiredate ) / 365 ) AS YEARS_WORKED FROM emp;
 
+일반 함수
+
+NVL( value1 , value2) : value1이 null이면 value2를 쓴다. value1과 value2의 자료형이 일치
+SELECT ename, sal, comm , (sal + NVL (comm , 0)) * 12 FROM emp;
+SELECT ename, NVL ( TO_CHAR(comm)  , 'No Commission')  AS "COMM" FROM emp;
+
+NVL2 ( value1 , value2, value3) : value1이 null인지 평가. null이면 value3, null이 아니면 value2 자료형이 일치하지 않아도 된다.
+SELECT NVL2(comm , 'Commission' , 'No  Commision') FROM emp;
+
+NULLIF (value1, value2) :  두 개의 값이 일치하면 NULL ,  두 개의 값이 일치하지 않으면 value1
+SELECT NULLIF (LENGTH(ename) , LENGTH( job )) "NULLIF" FROM emp;
+
+COALESCE (value1, valu2, value3 ...) : NULL값이 아닌 값을 사용한다. (자료형 일치)
+SELECT comm, sal, COALESCE(comm, sal, 0) FROM emp;
+SELECT comm, mgr, sal, COALESCE ( comm, mgr, sal) FROM emp;
+
+CASE 칼럼  WHEN 비교값 THEN 결과값
+               WHEN           THEN
+               WHEN           THEN
+               (ELSE 결과값)
+      END
+
+SELECT ename, sal, job, CASE job WHEN 'SALESMAN' THEN sal * 0.1
+                                             WHEN 'MANAGER' THEN sal * 0.2
+                                             WHEN 'ANALYST' THEN sal * 0.3
+                                             ELSE sal * 0.4
+                              END "Bonus" FROM emp;
+
+SELECT ename, sal, job, CASE WHEN sal >= 4000 AND sal <= 5000 THEN 'A'
+                                       WHEN sal >= 3000 AND sal < 4000 THEN 'B'
+                                       WHEN sal >= 2000 AND sal < 3000 THEN 'C'
+                                       WHEN sal >= 1000 AND sal < 2000 THEN 'D'
+                                       ELSE 'F'
+                        END "Grade"
+               FROM emp;
+
+DECODE : = 비교만 그낭함, 오리클 전용
+         DECODE (칼럼, 비교값, 반환값,
+                              비교값, 반환값,
+                              비교값, 반환값,
+                              반환값)
+SELECT ename, sal, job,
+         DECODE ( job , 'SALESMAN' , sal * 0.1 ,
+                              'MANAGER' , sal * 0.2 ,
+                              'ANALYST' , sal * 0.3 ,
+                               sal * 0.4 )
+                  "Bonus"
+FROM emp;
+
+SELECT ename, sal, job,
+            DECODE ( TRUNC ( sal / 1000) , 5, 'A',
+                                                      4 , 'A',
+                                                      3 , 'B',
+                                                      2 , 'C',
+                                                      1 , 'D',
+                                                      'F' ) "Grade"
+   FROM emp;
+
