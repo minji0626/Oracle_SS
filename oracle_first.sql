@@ -544,6 +544,7 @@ SELECT MAX(AVG(sal)) FROM emp GROUP BY deptno;
 분기별로 입사한 사원의 수 
 SELECT TO_CHAR (hiredate , 'Q') "분기" , COUNT(ename) "사원 수" FROM emp GROUP BY TO_CHAR (hiredate , 'Q') ORDER BY "분기";
 
+
 [실습 문제]
 1. 모든 사원의 급여 최고액, 최저액, 총액 및 평균액을 표시하시오.
    레이블을 각각 MAXIMUM,MINIMUM,SUM,AVERAGE로 지정하고
@@ -552,8 +553,48 @@ SELECT TO_CHAR (hiredate , 'Q') "분기" , COUNT(ename) "사원 수" FROM emp GROUP B
    평균 금액은 소수점 첫째 자리까지 표시하시오.
 3. 업무와 업무가 동일한 사원의 수를 표시하세요.
    업무별 사원 수를 구하세요.
-   
-SELECT MAX(sal) "Maximum" , MIN(sal) "Minimum" , TO_CHAR(SUM(sal) , '99,999') "Sum" , TO_CHAR (ROUND(AVG(sal)), '9,999') "Average" FROM emp;   
-SELECT MAX( sal + NVL ( comm , 0 )) "Max", MIN( sal + NVL ( comm , 0 )) "Min", TRUNC(AVG( sal + NVL ( comm , 0 )) , 1) "Avg" FROM emp;
+4. 30번 부서의 사원 수를 구하세요.
+부서 번호 명시 하지 않음
+SELECT COUNT(*) FROM emp WHERE deptno=30;
+부서 번호 명시함
+SELECT deptno, COUNT(*) FROM emp WHERE deptno = 30 GROUP BY deptno;
+5. 업무별 최고 월급을 구하고 업무, 최고 월급을 출력하세요.
+6. 20번 부서의 급여 합계를 구하고 급여 합계 금액을 출력하세요.
+7. 부서별로 지급되는 총 월급에서 금액이 9000이상을 받는 사원들의 부서번호, 총월급을 출력하세요.
+8. 업무별로 사번이 제일 늦은 사원을 구하고 그 결과 내에서 사번이 79로 시작하는 결과만 보여주세요.
+9. 업무별 총 월급을 출력하는 업무가'MANAGER'인 사원들은 제외하고 총 월급이 5000 보다 많은 업무와 총 월급만 출력하세요.
+10. 업무별로 사원의 수가 4명 이상인 업무와 인원 수를 출력하세요.
+
+SELECT TO_CHAR(MAX(sal), '9,999') "Maximum" , TO_CHAR(MIN(sal), '9,999') "Minimum" , TO_CHAR(SUM(sal) , '99,999') "Sum" , TO_CHAR (ROUND(AVG(sal)), '9,999') "Average" FROM emp;   
+SELECT MAX( sal + NVL ( comm , 0 )) "Max", MIN( sal + NVL ( comm , 0 )) "Min", ROUND(AVG( sal + NVL ( comm , 0 )) , 1) "Avg" FROM emp;
 SELECT COUNT(ename), job FROM emp GROUP BY job ORDER BY job;
+SELECT COUNT(ename) FROM emp WHERE deptno = 30;
+SELECT job, MAX(sal) FROM emp GROUP BY job;
+SELECT SUM(sal) FROM emp WHERE deptno = 20;
+SELECT SUM(sal) "총 월급", deptno FROM emp GROUP BY deptno HAVING SUM(sal) >= 9000;
+SELECT job, MAX(empno) FROM emp GROUP BY job  HAVING MAX(empno) LIKE '79%';
+SELECT job, MAX(empno) FROM emp WHERE empno LIKE '79%' GROUP BY job;
+SELECT job , SUM(sal) FROM emp GROUP BY job HAVING job != 'MANAGER' AND SUM(sal) > 5000 ;
+SELECT job , COUNT(empno) FROM emp GROUP BY job HAVING COUNT(*) >= 4;
+
+분석 함수
+RANK () : 순위를 표현할 떄 사용하는 함수
+RANK(조건값) WITHIN GROUP (ORDER BY 조건값 컬럼명) : 특정 데이터의 순위 확인하기
+[주의] RANK 뒤에 나오는 데이터와 ORDER BY 뒤에 나오는 데이터는 같은 걸럼이어야 한다.
+
+SELECT RANK('SMITH') WITHIN GROUP (ORDER BY ename) "RANK" FROM emp;
+
+RANK() OVER (ORDER BY 컬럼명) : 전체 순위
+사원들의 empno, ename, sal, 급여 순위를 출력
+SELECT empno, ename sal, RANK() OVER(ORDER BY sal DESC) "급여 순위" FROM emp;
+
+10번 부서에 속한 직원들의 사번과 이름, 급여, 해당 부서 내의 급여 순위를 출력하세요.
+SELECT ename, sal, RANK() OVER(ORDER BY sal DESC)"급여 순위" FROM emp WHERE deptno = 10;
+
+emp 테이블에서 조회하여 사번, 이름, 급여, 부서번호, 부서별 급여 순위를 출력
+SELECT empno, ename, sal, deptno, RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) "급여 순위" FROM emp;
+emp 테이블에서 같은 부서내의 job 별로 급여 순위를 출력 empno, ename, sal, deptno, job 을 출력하세요
+SELECT empno, ename, sal, deptno,job, RANK() OVER (PARTITION BY deptno, job ORDER BY sal DESC) "급여 순위" FROM emp;
+
+
 
