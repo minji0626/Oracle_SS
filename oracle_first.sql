@@ -640,12 +640,106 @@ SELECT DISTINCT(e.ename) "사원 이름" , m.ename "관리자 이름" FROM emp e
 
 [실습 문제]
 1. 모든 사원의 이름 , 부서번호, 부서 이름을 표시하세요. (emp,dept)
-2. 업무가 MANAGER인 사원의 정보를 이름, 업무, 부서명, 근무지 순으로 출력하세요 (emp, dept)
-3. 커미션을 받고 급여가 1600이상인 사원의 사원 이름, 급여, 부서명, 근무지를 출력하시요.
-
 SELECT e.ename , e.deptno, d.dname FROM emp e, dept d WHERE e.deptno = d.deptno;
+
+2. 업무가 MANAGER인 사원의 정보를 이름, 업무, 부서명, 근무지 순으로 출력하세요 (emp, dept)
 SELECT e.ename, e.job, d.dname, d.loc FROM emp e, dept d WHERE e.deptno = d.deptno AND e.job = 'MANAGER';
+
+3. 커미션을 받고 급여가 1600이상인 사원의 사원 이름, 급여, 부서명, 근무지를 출력하시요.
 SELECT e.ename , e.sal , d.dname, d.loc FROM emp e, dept d WHERE e.deptno= d.deptno AND ( e.sal + NVL(comm,0)) >= 1600;
 
+4. 근무지가 CHICAGO인 모든 사원의 이름, 업무, 부서번호 및 부서 이름을 표시하세요.
+SELECT e.ename, e.job, e.deptno, d.dname FROM emp e, dept d WHERE e.deptno = d.deptno AND d.loc = 'CHICAGO';
+
+5. 근무지별로 근무하는 사원의 수가 5명 이하인 경우, 인원이 적은 도시 순으로 정렬하시오. ( 근무 인원이 0명인 곳도 표시하세요. OUTER JOIN)
+SELECT DISTINCT (d.loc) , COUNT(e.empno) FROM emp e , dept d WHERE e.deptno (+)= d.deptno GROUP BY d.loc HAVING COUNT(e.empno) <= 5 ORDER BY COUNT(e.empno);
+
+6. 사원의 이름 및 사원 번호를 관리자의 이름과 관리자 번호와 함계 표시하고 각각의 
+   열 레이블을 EMPLOYEE , EMP# , MANAGER , MGR# [관리자가 없는 사원은 미출력.]
+SELECT e.ename "Employee", e.empno "EMP#" , m.ename "Manager", m.empno "MGR#" FROM emp e, emp m WHERE m.empno = e.mgr; 
+
+7. 관리자보다 먼저 입사한 모든 사원의 이름 및 입사일을 관리자의 이름 및 입사일과 함께 표시하고 
+   열 레이블은 EMPLOYEE , EMP HIRED , MANAGER , MGR HIRED   [관리자가 없는 사원은 미출력]
+SELECT e.ename "Employee" , e.hiredate "EMP Hired" , m.ename "Manager" , m.hiredate "MGR Hired" FROM emp e, emp m WHERE m.empno = e.mgr AND e.hiredate < m.hiredate;
 
 
+[표준 SQL]
+
+내부 조인 (Inner Join)
+SELECT emp.ename , dept.deptno FROM emp INNER JOIN dept ON emp.deptno = dept.deptno ;
+SELECT emp.ename , dept.deptno FROM emp JOIN dept ON emp.deptno = dept.deptno ;
+SELECT e.ename, d.dname FROM emp e JOIN dept d ON e.deptno = d.deptno;
+
+두 개 테이블의 공통 컬럼은 알리아스를 생략할 수 없음
+SELECT ename, dname, d.deptno FROM emp e JOIN dept d ON e.deptno = d.deptno;
+
+ON절은 JOIN  조건을 명시하고 WHERE에 부가 조건을 명시한다.
+SELECT e.ename, d.dname FROM emp e JOIN dept d ON e.deptno = d.deptno WHERE e.ename = 'ALLEN';
+
+만약 JOIN 조건에 사용된 컬럼의 이름이 같다면 다음과 같이 USING절을 사용할 수 있다.
+SELECT * FROM emp e JOIN dept d USING(deptno);
+SELECT e.ename, deptno, d.dname FROM emp e JOIN dept d USING(deptno);
+SELECT ename, deptno, dname FROM emp e JOIN dept d USING(deptno);
+
+SELECT e.ename, deptno FROM emp e JOIN dept d USING (deptno) WHERE e.ename = 'ALLEN';
+
+SELF JOIN
+
+사원 이름과 해당 사원의 관리자 이름 구하기 (관리자가 없는 사원은 제외)
+SELECT e.ename "Employee" , m.ename "Manager" FROM emp e JOIN emp m ON e.mgr = m.empno ;
+
+외부 조인 (Outer Join)
+
+누락된 행의 방향 표시
+SELECT e.deptno ,d.deptno FROM emp e RIGHT OUTER JOIN dept d ON e.deptno = d.deptno;
+
+사원 이름과 해당 사원의 관리자 이름 구하기 (관리자 없는 사원도 표시)
+SELECT e.ename "Employee Name" ,m.ename "Manager Name" FROM emp e LEFT OUTER JOIN emp m ON e.mgr = m.empno;
+
+[실습 문제]
+1. 모든 사원의 이름, 부서번호, 부서이름, 근무지를 표시하세요. (emp,dept)
+SELECT e.ename, e.deptno , d.dname, d.loc FROM emp e JOIN dept d ON e.deptno = d.deptno;
+2. 업무가 SALESMAN인 사원의 정보를 이름, 업무, 부서명, 근무지 순으로 출력하세요
+SELECT e.ename , e.job , d.dname, d.loc FROM emp e JOIN dept d ON e.deptno = d.deptno WHERE e.job = 'SALESMAN';
+3. 커미션이 책정된 사원들의 사원 번호, 이름, 연봉, 급여+comm , 급여 등급[실급여로 등급 매기기]을 출력하는데
+   각각의 열 레이블을 "사원 번호" "이름" "연봉" "실급여" "급여 등급" 으로 지정하고 커미션이 null인 것은 제외하고 출력한다. [emp, salgrade]
+SELECT e.empno "사원 번호", e.ename "사원 이름", (e.sal +e.comm) "실급여" , (e.sal * 12) "연봉" , s.grade "급여 등급" 
+FROM emp e JOIN salgrade s ON (e.sal + e.comm)
+BETWEEN s.losal AND s.hisal WHERE e.comm IS NOT NULL;  
+
+4.10번 부서에서 근무하는 사원들의 부서 번호, 부서 이름, 사원 이름, 월급, 급여 등급을 출력하세요. [emp , salgrade, dept]
+[오라클 전용]
+SELECT d.deptno , d.dname, e.ename, e.sal, s.grade FROM emp e, dept d, salgrade s WHERE e.deptno = d.deptno AND e.sal BETWEEN s.losal AND s.hisal AND e.deptno=10;
+
+[표준 SQL]
+SELECT d.deptno , d.dname, e.ename, e.sal, s.grade FROM emp e JOIN dept d ON e.deptno = d.deptno JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal WHERE e.deptno=10;
+
+
+집합연산자
+UNION : 합집합 중복값 제거 
+            UNION은 두 테이블의 결합을 나타내며, 결합시키는 두 테이블의 중복되지 않은 값들을 반환
+
+SELECT deptno FROM emp UNION SELECT deptno FROM dept;
+
+UNION ALL : UNION과 같으나 두 테이블의 중복되는 값까지 반환
+SELECT deptno FROM emp UNION ALL SELECT deptno FROM dept;
+
+INTERSECT : 두 행의 집합 중 공통된 행을 반환
+SELECT deptno FROM emp INTERSECT SELECT deptno FROM dept;
+
+MINUS : 첫번째 SELECT 문에 의해 반환되는 행 중에서 두번째 SELECT문에 의해 반환되는 행에 존재하지 않는 행들을 보여줌
+SELECT deptno FROM dept MINUS SELECT deptno FROM emp;
+
+SUBQUERY : 다른 하나의 SQL 문낭의 절에 NESTED된 SELECT 문장
+
+단일행 서브쿼리 : 오직 한 개의 행(값)을 반환
+
+ SELECT job FROM emp WHERE empno = 7369;
+ SELECT empno, ename , job FROM emp WHERE job = 'CLERK';
+ -> 위의 두개의 문자를 서브쿼리를 사용해서 작성
+ SELECT empno, ename, job FROM emp WHERE job = (SELECT job FROM emp WHERE empno = 7369);
+ 
+ 7698의 급여보다 많은 급여를 받는 사원들의 사원번호, 사원이름, 급여를 출력하세요.
+ SELECT empno, ename, sal FROM emp WHERE sal > (SELECT sal FROM emp WHERE empno = 7698);
+ 
+ 
