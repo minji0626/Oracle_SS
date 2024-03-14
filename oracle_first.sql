@@ -802,7 +802,7 @@ SELECT ename , sal FROm emp WHERE mgr IN (SELECT empno FROM emp WHERE ename = 'K
 7. 20번 부서에서 급여를 가장 많이 받는 사원과 동일한 급여를 받는 사원의 이름과 부서명, 급여, 급여 등급을 출력하세요.
 SELECT e.ename, d.dname , e.sal, s.grade FROM emp e, dept d, salgrade s WHERE d.deptno= e.deptno AND e.sal BETWEEN s.losal AND s.hisal AND e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
 
-
+SELECT e.ename , d.dname, e.sal, s.grade FROM emp e JOIn dept d ON e.deptno = d.deptno JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal WHERE e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
 
 
 
