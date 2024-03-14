@@ -764,5 +764,17 @@ SELECT ename, sal FROM emp WHERE sal > ANY (SELECT sal FROM emp WHERE job = 'SAL
  -> 위 두 쿼리를 서브쿼리로 작성
  SELECT empno, ename, sal, deptno FROM emp WHERE sal > ALL ( SELECT sal FROM emp WHERE deptno = 20);
  
+ 다중열 서브쿼리
+ 서브쿼리의 결과가 두 개 이상의 컬럼으로 반환되어 메인 쿼리에 전달하는 쿼리
+ SELECT empno, ename, sal, deptno FROM emp WHERE (deptno, sal) IN (SELECT deptno , sal FROM emp WHERE deptno = 30);
  
+ 부서별로 가장 급여를 적게 받는 사원 정보를 출력
+ SELECT  empno, ename, sal, deptno FROM emp WHERE (deptno, sal) IN (SELECT deptno ,MIN(sal) FROM emp GROUP BY deptno);
  
+ 부서별로 가장 급여를 적게 받는 사원과 동일 급여를 받는 사원 정보를 출력
+ SELECT empno, ename, sal, deptno FROM emp WHERE sal IN (SELECT MIN(sal) FROM emp GROUP BY deptno);
+ 
+ 인라인 뷰 : 메인 쿼리의 FROM 절을 서브 쿼리로 이용하는 방법
+ SELECT * FROM emp;
+ 
+ SELECT empno,deptno FROM emp WHERE sal > (SELECT AVG(sal) FROM emp WHERE deptno = 20);
