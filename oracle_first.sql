@@ -742,4 +742,27 @@ SUBQUERY : 다른 하나의 SQL 문낭의 절에 NESTED된 SELECT 문장
  7698의 급여보다 많은 급여를 받는 사원들의 사원번호, 사원이름, 급여를 출력하세요.
  SELECT empno, ename, sal FROM emp WHERE sal > (SELECT sal FROM emp WHERE empno = 7698);
  
+ 다중행 서브쿼리 : 하나 이상의 행을 반환하는 서브쿼리
+ 
+ IN 연산자의 사용
+ 
+ 부서별로 급여를 가장 적게 받는 사원과 동일한 급여를 받는 사원의 정보를 출력하세요.
+SELECT empno, ename, sal, deptno FROM emp WHERE sal IN(SELECT MIN(sal) FROM emp GROUP BY deptno); 
+ 
+ ANY 연산자의 사용
+ ANY 연산자는 서브쿼리의 결과값 중 어느 하나의 값이라도 만족이 되면 결과값을 반환
+ 
+ SELECT sal FROM emp WHERE job = 'SALESMAN';
+ SELECT ename, sal FROM emp WHERE sal>1250 OR sal>1500 OR sal>1600;
+-> 위 문장을 서브쿼리로 작성
+SELECT ename, sal FROM emp WHERE sal > ANY (SELECT sal FROM emp WHERE job = 'SALESMAN');
+ 
+  ALL 연산자의 사용
+ 서브쿼리의 결과와 모든 값이 일치
+ SELECT sal FROM emp WHERE deptno =20;
+ SELECT empno, ename, sal, deptno FROM emp WHERE sal>800 AND sal>2975 AND sal >3000;
+ -> 위 두 쿼리를 서브쿼리로 작성
+ SELECT empno, ename, sal, deptno FROM emp WHERE sal > ALL ( SELECT sal FROM emp WHERE deptno = 20);
+ 
+ 
  
