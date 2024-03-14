@@ -779,3 +779,32 @@ SELECT empno, ename, sal, deptno FROM emp WHERE sal IN (SELECT MIN(sal) FROM emp
 만약 결과값이 다중 행이거나 다중 열이라면 DBMS는 그 중 어떠한 행, 어떠한 열을 출력해야 하는지 알 수 없어 에러를 출력
 
 SELECT deptno, (SELECT dname FROM dept WHERE deptno = e.deptno) , SUM(sal) FROM emp e GROUP BY deptno;
+
+[실습 문제]
+1. "BLAKE" 와 같은 부서에 있는 사원들의 이름과 입사일을 구하는데 
+   "BLAKE"는 제외하고 출력하세요.
+SELECT ename, hiredate FROM emp WHERE deptno IN (SELECT deptno FROM emp WHERE ename = 'BLAKE') AND ename != 'BLAKE';
+2. 평균 급여보다 많은 급여를 받는 사원들의 사원 번호, 이름, 월급을 출력하는데 월급이 높은 사람 순으로 출력하시오.
+SELECT empno , ename, sal FROM emp WHERE sal > (SELECT AVG(sal) FROM emp) ORDER BY sal DESC ;
+3. 10번 부서에서 급여를 가장 적게 받는 사원과 동일한 급여를 받는 사원의 이름과 월급을 출력하세요. 
+SELECT ename, sal FROM emp WHERE sal = (SELECT MIN(sal) FROM emp WHERE deptno = 10);
+
+4. 부서별 사원 수를 구하고 사원 수가 3명 이하의 부서의 부서명과 사원 수를 출력하세요.
+SELECT a.dname , b.cnt FROM dept a , (SELECT deptno , COUNT(empno) cnt FROM emp GROUP BY deptno) b WHERE a.deptno = b.deptno AND b.cnt <= 3;
+SELECT d.dname , COUNT (e.empno) cnt FROM emp e, dept d WHERE e.deptno = d.deptno GROUP BY d.dname HAVING COUNT (e.empno) <= 3;
+
+5.  사원 번호가 7844인 사원 보다 빨리 입사한 사원의 이름과 입사일을 출력하세요.
+SELECT ename , hiredate FROM emp WHERE hiredate < (SELECT hiredate FROM emp WHERE empno = 7844);
+
+6. 직속 상사(MANAGER, mgr)가 KING인 모든 사원의 이름과 급여를 출려하세요.
+SELECT ename , sal FROm emp WHERE mgr IN (SELECT empno FROM emp WHERE ename = 'KING');
+
+7. 20번 부서에서 급여를 가장 많이 받는 사원과 동일한 급여를 받는 사원의 이름과 부서명, 급여, 급여 등급을 출력하세요.
+SELECT e.ename, d.dname , e.sal, s.grade FROM emp e, dept d, salgrade s WHERE d.deptno= e.deptno AND e.sal BETWEEN s.losal AND s.hisal AND e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
+
+
+
+
+
+
+
