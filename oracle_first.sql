@@ -638,7 +638,14 @@ SELECT DISTINCT (e.deptno), d.deptno FROM emp e, dept d WHERE e.deptno (+)= d.de
 SELECT DISTINCT(e.ename) "사원 이름" , m.ename "관리자 이름" FROM emp e, emp m WHERE m.empno (+)= e.mgr;
 
 
+[실습 문제]
+1. 모든 사원의 이름 , 부서번호, 부서 이름을 표시하세요. (emp,dept)
+2. 업무가 MANAGER인 사원의 정보를 이름, 업무, 부서명, 근무지 순으로 출력하세요 (emp, dept)
+3. 커미션을 받고 급여가 1600이상인 사원의 사원 이름, 급여, 부서명, 근무지를 출력하시요.
 
+SELECT e.ename , e.deptno, d.dname FROM emp e, dept d WHERE e.deptno = d.deptno;
+SELECT e.ename, e.job, d.dname, d.loc FROM emp e, dept d WHERE e.deptno = d.deptno AND e.job = 'MANAGER';
+SELECT e.ename , e.sal , d.dname, d.loc FROM emp e, dept d WHERE e.deptno= d.deptno AND ( e.sal + NVL(comm,0)) >= 1600;
 
 
 
