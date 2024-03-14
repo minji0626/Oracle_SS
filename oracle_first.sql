@@ -8,9 +8,9 @@ SELECT *  FROM emp;
 SELECT ename,sal FROM emp;
 
 DUAL:함수 및 계산의 결과를 볼 때 사용할 수 있는 공용(public) 테이블
-   사용자 데이터가 있는 테이블에서 유래하지 않은 상수 값
-   의사열(pesudo-coumn), 표현식 등의 값을 단 한번만 돌리거나 현재 날짜,
-   시각을 알고자 할 때 이용. 일시적인 산술, 날짜 연산 등에 주로 사용
+사용자 데이터가 있는 테이블에서 유래하지 않은 상수 값
+의사열(pesudo-coumn), 표현식 등의 값을 단 한번만 돌리거나 현재 날짜,
+시각을 알고자 할 때 이용. 일시적인 산술, 날짜 연산 등에 주로 사용
 SELECT SYSDATE FROM dual;
 SELECT ASCII('A') FROM dual;
 SELECT ASCII(0) FROM dual;
@@ -24,7 +24,7 @@ SELECT ename, sal, sal + 300 FROM emp;
 SELECT ename,sal,(sal+300)*12 FROM emp;
 
 null값의 정의 : null은 사용할 수 없거나, 할당되지 않았거나, 알 수 없거나, 적용할 수 없는 값 (null은 0이나 공백과 다름)
-            
+         
 SELECT empno,ename,job,comm FROM emp;
 
 산술식의 NULL값 : NULL 값을 포함하는 산술식은  NULL로 계산
@@ -67,8 +67,8 @@ SELECT empno AS "사원번호",  ename AS "사원이름" , sal AS  "월급" , (s
 SELECT DISTINCT job FROM emp; 
 
 WHERE절 사용 : 조건 체크 결과 행 제한하기
-                    // (주의) ALIAS 사용 불가
-                     
+                 // (주의) ALIAS 사용 불가
+                  
 SELECT * FROM emp WHERE deptno = 10;
 SELECT ename, job, deptno FROM emp WHERE ename = 'SMITH';
 SELECT * FROM emp WHERE hiredate > '81-12-03' ; 
@@ -430,52 +430,52 @@ SELECT comm, sal, COALESCE(comm, sal, 0) FROM emp;
 SELECT comm, mgr, sal, COALESCE ( comm, mgr, sal) FROM emp;
 
 CASE 칼럼  WHEN 비교값 THEN 결과값
-               WHEN           THEN
-               WHEN           THEN
-               (ELSE 결과값)
-      END
+            WHEN           THEN
+            WHEN           THEN
+            (ELSE 결과값)
+   END
 
 SELECT ename, sal, job, CASE job WHEN 'SALESMAN' THEN sal * 0.1
-                                             WHEN 'MANAGER' THEN sal * 0.2
-                                             WHEN 'ANALYST' THEN sal * 0.3
-                                             ELSE sal * 0.4
-                              END "Bonus" FROM emp;
+                                          WHEN 'MANAGER' THEN sal * 0.2
+                                          WHEN 'ANALYST' THEN sal * 0.3
+                                          ELSE sal * 0.4
+                           END "Bonus" FROM emp;
 
 SELECT ename, sal, job, CASE WHEN sal >= 4000 AND sal <= 5000 THEN 'A'
-                                       WHEN sal >= 3000 AND sal < 4000 THEN 'B'
-                                       WHEN sal >= 2000 AND sal < 3000 THEN 'C'
-                                       WHEN sal >= 1000 AND sal < 2000 THEN 'D'
-                                       ELSE 'F'
-                        END "Grade"
-               FROM emp;
+                                    WHEN sal >= 3000 AND sal < 4000 THEN 'B'
+                                    WHEN sal >= 2000 AND sal < 3000 THEN 'C'
+                                    WHEN sal >= 1000 AND sal < 2000 THEN 'D'
+                                    ELSE 'F'
+                     END "Grade"
+            FROM emp;
 
 DECODE : = 비교만 그낭함, 오리클 전용
-         DECODE (칼럼, 비교값, 반환값,
-                              비교값, 반환값,
-                              비교값, 반환값,
-                              반환값)
+      DECODE (칼럼, 비교값, 반환값,
+                           비교값, 반환값,
+                           비교값, 반환값,
+                           반환값)
 SELECT ename, sal, job,
-         DECODE ( job , 'SALESMAN' , sal * 0.1 ,
-                              'MANAGER' , sal * 0.2 ,
-                              'ANALYST' , sal * 0.3 ,
-                               sal * 0.4 )
-                  "Bonus"
+      DECODE ( job , 'SALESMAN' , sal * 0.1 ,
+                           'MANAGER' , sal * 0.2 ,
+                           'ANALYST' , sal * 0.3 ,
+                            sal * 0.4 )
+               "Bonus"
 FROM emp;
 
 SELECT ename, sal, job,
-            DECODE ( TRUNC ( sal / 1000) , 5, 'A',
-                                                      4 , 'A',
-                                                      3 , 'B',
-                                                      2 , 'C',
-                                                      1 , 'D',
-                                                      'F' ) "Grade"
-   FROM emp;
+         DECODE ( TRUNC ( sal / 1000) , 5, 'A',
+                                                   4 , 'A',
+                                                   3 , 'B',
+                                                   2 , 'C',
+                                                   1 , 'D',
+                                                   'F' ) "Grade"
+FROM emp;
 
 [실습 문제]
 1. EMP 테이블에서 사원 이름, 월급, 월급과 커미션을 더한 값을 컬럼명 실급여라고 해서 출력하세요.
-   단 , NULL 값은 나타나지 않게 작성하세요.
+단 , NULL 값은 나타나지 않게 작성하세요.
 2. EMP 테이블에서 월급과 커미션을 합친 금액이 2000 이상인 급여를 받는 사원의 이름, 업무, 월급, 커미션, 고용날짜를 출력하세요.
-   단, 고용 날짜는 1980 - 12 - 17 형태로 출력하세요.
+단, 고용 날짜는 1980 - 12 - 17 형태로 출력하세요.
 
 SELECT ename, sal,  ( sal + NVL ( comm , 0 ) ) AS "실급여" FROM emp;
 SELECT ename, job, sal, comm, TO_CHAR ( hiredate , 'YYYY-MM-DD') "hiredate"FROM emp WHERE ( sal + NVL ( comm , 0 ) ) >= 2000;
@@ -509,8 +509,8 @@ SELECT MAX(sal), MIN (sal), ROUND(AVG(sal)) , SUM(sal) FROM emp WHERE deptno = 1
 SELECT COUNT(*) FROM emp WHERE deptno = 20;
 
 GROUP BY : SELECT절에 집합함수 적용시 개별 컬럼을 지정할 수 없음.
-                 개별 컬럼을 지정할 경우에는 반드시 GROUP BY 절에 지정된 컬럼만 가능하다.
-                 
+              개별 컬럼을 지정할 경우에는 반드시 GROUP BY 절에 지정된 컬럼만 가능하다.
+              
 SELECT deptno, MAX(sal) FROM emp GROUP BY deptno;
 SELECT deptno, MAX(sal) FROM emp GROUP BY deptno ORDER BY deptno;
 
@@ -529,7 +529,7 @@ HAVING : 그룹함수를 이용해서 조건 체크할 때 사용 알리아스 �
 SELECT deptno , AVG(sal) FROM emp WHERE AVG(sal) >= 2000 GROUP BY deptno; -- WHERE 에 그룹 함수를 이용해서 조건을 체크하면 오류 발생
 [정상 구문]
 SELECT deptno, AVG(sal) FROM emp GROUP BY deptno HAVING AVG(sal) >= 2000;
-               
+            
 부서별로 최대 급여를 구하는데 3000을 초과한 최대 급여를 구하세요.
 SELECT deptno, MAX(sal) FROM emp GROUP BY deptno HAVING MAX(sal) > 3000 ;
 
@@ -541,12 +541,12 @@ SELECT TO_CHAR (hiredate , 'Q') "분기" , COUNT(ename) "사원 수" FROM emp GR
 
 [실습 문제]
 1. 모든 사원의 급여 최고액, 최저액, 총액 및 평균액을 표시하시오.
-   레이블을 각각 MAXIMUM,MINIMUM,SUM,AVERAGE로 지정하고
-   결과를 정수로 반올림하고 세 자리 단위로 ,를 명시하세요.
+레이블을 각각 MAXIMUM,MINIMUM,SUM,AVERAGE로 지정하고
+결과를 정수로 반올림하고 세 자리 단위로 ,를 명시하세요.
 2. 급여와 커미션을 더한 금액의 최고, 최저, 평균 금액을 구하시오.
-   평균 금액은 소수점 첫째 자리까지 표시하시오.
+평균 금액은 소수점 첫째 자리까지 표시하시오.
 3. 업무와 업무가 동일한 사원의 수를 표시하세요.
-   업무별 사원 수를 구하세요.
+업무별 사원 수를 구하세요.
 4. 30번 부서의 사원 수를 구하세요.
 부서 번호 명시 하지 않음
 SELECT COUNT(*) FROM emp WHERE deptno=30;
@@ -591,9 +591,9 @@ emp 테이블에서 같은 부서내의 job 별로 급여 순위를 출력 empno
 SELECT empno, ename, sal, deptno,job, RANK() OVER (PARTITION BY deptno, job ORDER BY sal DESC) "급여 순위" FROM emp;
 
 JOIN : 둘 이상의 테이블을 연결하여 데이터를 검색하는 방법 
-         보통 둘 이상의 행들의 공통된 값 PRIMARY KEY 및 FOREIGN KEY 값을 사용하여 조인
-         두개의 테이블을 SELECT 문장 안에서 조인하려면
-         적어도 하나의 컬럼이 그 두 테이블 사이에 공유 되어야 함.
+      보통 둘 이상의 행들의 공통된 값 PRIMARY KEY 및 FOREIGN KEY 값을 사용하여 조인
+      두개의 테이블을 SELECT 문장 안에서 조인하려면
+      적어도 하나의 컬럼이 그 두 테이블 사이에 공유 되어야 함.
 
 Cartesian Product(카티션 곱) : 검색하고자 했던 데이터 뿐 아니라 조인에 사용된 테이블들의 모든 데이터가 반환되는 현상
 1. 조인 조건을 정의하지 않았을 경우
@@ -625,10 +625,10 @@ Self JOIN : 동일한 테이블 조인
 사원 이름과 해당 사원의 관리자 이름 구하기 (관리자가 없는 사원 제외)
 SELECT e.ename "사원 이름", m.ename "관리자 이름"FROM emp e, emp m WHERE e.mgr = m.empno;
 
- 외부 조인 [Outer Join] : Equi Join 문장들의 한 가지 제약점은 그것들이 조인을 생성하려 하는 두 개의 테이블의 두 개 컬럼에서 
-                              공통된 값이 없다면 테이블로부터 데이터를 반환하지 않는다는 것 
-                              정상적으로 조인 조건을 만족하지 못 하는 행들을 보기위해 Outer Join을 사용
-                              
+외부 조인 [Outer Join] : Equi Join 문장들의 한 가지 제약점은 그것들이 조인을 생성하려 하는 두 개의 테이블의 두 개 컬럼에서 
+                           공통된 값이 없다면 테이블로부터 데이터를 반환하지 않는다는 것 
+                           정상적으로 조인 조건을 만족하지 못 하는 행들을 보기위해 Outer Join을 사용
+                           
 
 
 누락된 행을 표시하기 위해서 누락된 행이 있는 테이블의 반대 테이블의 조인 조건에 + 명시
@@ -655,11 +655,11 @@ SELECT e.ename, e.job, e.deptno, d.dname FROM emp e, dept d WHERE e.deptno = d.d
 SELECT DISTINCT (d.loc) , COUNT(e.empno) FROM emp e , dept d WHERE e.deptno (+)= d.deptno GROUP BY d.loc HAVING COUNT(e.empno) <= 5 ORDER BY COUNT(e.empno);
 
 6. 사원의 이름 및 사원 번호를 관리자의 이름과 관리자 번호와 함계 표시하고 각각의 
-   열 레이블을 EMPLOYEE , EMP# , MANAGER , MGR# [관리자가 없는 사원은 미출력.]
+열 레이블을 EMPLOYEE , EMP# , MANAGER , MGR# [관리자가 없는 사원은 미출력.]
 SELECT e.ename "Employee", e.empno "EMP#" , m.ename "Manager", m.empno "MGR#" FROM emp e, emp m WHERE m.empno = e.mgr; 
 
 7. 관리자보다 먼저 입사한 모든 사원의 이름 및 입사일을 관리자의 이름 및 입사일과 함께 표시하고 
-   열 레이블은 EMPLOYEE , EMP HIRED , MANAGER , MGR HIRED   [관리자가 없는 사원은 미출력]
+열 레이블은 EMPLOYEE , EMP HIRED , MANAGER , MGR HIRED   [관리자가 없는 사원은 미출력]
 SELECT e.ename "Employee" , e.hiredate "EMP Hired" , m.ename "Manager" , m.hiredate "MGR Hired" FROM emp e, emp m WHERE m.empno = e.mgr AND e.hiredate < m.hiredate;
 
 
@@ -702,7 +702,7 @@ SELECT e.ename, e.deptno , d.dname, d.loc FROM emp e JOIN dept d ON e.deptno = d
 2. 업무가 SALESMAN인 사원의 정보를 이름, 업무, 부서명, 근무지 순으로 출력하세요
 SELECT e.ename , e.job , d.dname, d.loc FROM emp e JOIN dept d ON e.deptno = d.deptno WHERE e.job = 'SALESMAN';
 3. 커미션이 책정된 사원들의 사원 번호, 이름, 연봉, 급여+comm , 급여 등급[실급여로 등급 매기기]을 출력하는데
-   각각의 열 레이블을 "사원 번호" "이름" "연봉" "실급여" "급여 등급" 으로 지정하고 커미션이 null인 것은 제외하고 출력한다. [emp, salgrade]
+각각의 열 레이블을 "사원 번호" "이름" "연봉" "실급여" "급여 등급" 으로 지정하고 커미션이 null인 것은 제외하고 출력한다. [emp, salgrade]
 SELECT e.empno "사원 번호", e.ename "사원 이름", (e.sal +e.comm) "실급여" , (e.sal * 12) "연봉" , s.grade "급여 등급" 
 FROM emp e JOIN salgrade s ON (e.sal + e.comm)
 BETWEEN s.losal AND s.hisal WHERE e.comm IS NOT NULL;  
@@ -717,7 +717,7 @@ SELECT d.deptno , d.dname, e.ename, e.sal, s.grade FROM emp e JOIN dept d ON e.d
 
 집합연산자
 UNION : 합집합 중복값 제거 
-            UNION은 두 테이블의 결합을 나타내며, 결합시키는 두 테이블의 중복되지 않은 값들을 반환
+         UNION은 두 테이블의 결합을 나타내며, 결합시키는 두 테이블의 중복되지 않은 값들을 반환
 
 SELECT deptno FROM emp UNION SELECT deptno FROM dept;
 
@@ -734,47 +734,48 @@ SUBQUERY : 다른 하나의 SQL 문낭의 절에 NESTED된 SELECT 문장
 
 단일행 서브쿼리 : 오직 한 개의 행(값)을 반환
 
- SELECT job FROM emp WHERE empno = 7369;
- SELECT empno, ename , job FROM emp WHERE job = 'CLERK';
- -> 위의 두개의 문자를 서브쿼리를 사용해서 작성
- SELECT empno, ename, job FROM emp WHERE job = (SELECT job FROM emp WHERE empno = 7369);
- 
- 7698의 급여보다 많은 급여를 받는 사원들의 사원번호, 사원이름, 급여를 출력하세요.
- SELECT empno, ename, sal FROM emp WHERE sal > (SELECT sal FROM emp WHERE empno = 7698);
- 
- 다중행 서브쿼리 : 하나 이상의 행을 반환하는 서브쿼리
- 
- IN 연산자의 사용
- 
- 부서별로 급여를 가장 적게 받는 사원과 동일한 급여를 받는 사원의 정보를 출력하세요.
+SELECT job FROM emp WHERE empno = 7369;
+SELECT empno, ename , job FROM emp WHERE job = 'CLERK';
+-> 위의 두개의 문자를 서브쿼리를 사용해서 작성
+SELECT empno, ename, job FROM emp WHERE job = (SELECT job FROM emp WHERE empno = 7369);
+
+7698의 급여보다 많은 급여를 받는 사원들의 사원번호, 사원이름, 급여를 출력하세요.
+SELECT empno, ename, sal FROM emp WHERE sal > (SELECT sal FROM emp WHERE empno = 7698);
+
+다중행 서브쿼리 : 하나 이상의 행을 반환하는 서브쿼리
+
+IN 연산자의 사용
+
+부서별로 급여를 가장 적게 받는 사원과 동일한 급여를 받는 사원의 정보를 출력하세요.
 SELECT empno, ename, sal, deptno FROM emp WHERE sal IN(SELECT MIN(sal) FROM emp GROUP BY deptno); 
- 
- ANY 연산자의 사용
- ANY 연산자는 서브쿼리의 결과값 중 어느 하나의 값이라도 만족이 되면 결과값을 반환
- 
- SELECT sal FROM emp WHERE job = 'SALESMAN';
- SELECT ename, sal FROM emp WHERE sal>1250 OR sal>1500 OR sal>1600;
+
+ANY 연산자의 사용
+ANY 연산자는 서브쿼리의 결과값 중 어느 하나의 값이라도 만족이 되면 결과값을 반환
+
+SELECT sal FROM emp WHERE job = 'SALESMAN';
+SELECT ename, sal FROM emp WHERE sal>1250 OR sal>1500 OR sal>1600;
 -> 위 문장을 서브쿼리로 작성
 SELECT ename, sal FROM emp WHERE sal > ANY (SELECT sal FROM emp WHERE job = 'SALESMAN');
- 
-  ALL 연산자의 사용
- 서브쿼리의 결과와 모든 값이 일치
- SELECT sal FROM emp WHERE deptno =20;
- SELECT empno, ename, sal, deptno FROM emp WHERE sal>800 AND sal>2975 AND sal >3000;
- -> 위 두 쿼리를 서브쿼리로 작성
- SELECT empno, ename, sal, deptno FROM emp WHERE sal > ALL ( SELECT sal FROM emp WHERE deptno = 20);
- 
- 다중열 서브쿼리
- 서브쿼리의 결과가 두 개 이상의 컬럼으로 반환되어 메인 쿼리에 전달하는 쿼리
- SELECT empno, ename, sal, deptno FROM emp WHERE (deptno, sal) IN (SELECT deptno , sal FROM emp WHERE deptno = 30);
- 
- 부서별로 가장 급여를 적게 받는 사원 정보를 출력
- SELECT  empno, ename, sal, deptno FROM emp WHERE (deptno, sal) IN (SELECT deptno ,MIN(sal) FROM emp GROUP BY deptno);
- 
- 부서별로 가장 급여를 적게 받는 사원과 동일 급여를 받는 사원 정보를 출력
- SELECT empno, ename, sal, deptno FROM emp WHERE sal IN (SELECT MIN(sal) FROM emp GROUP BY deptno);
- 
- 인라인 뷰 : 메인 쿼리의 FROM 절을 서브 쿼리로 이용하는 방법
- SELECT * FROM emp;
- 
- SELECT empno,deptno FROM emp WHERE sal > (SELECT AVG(sal) FROM emp WHERE deptno = 20);
+
+ALL 연산자의 사용
+서브쿼리의 결과와 모든 값이 일치
+SELECT sal FROM emp WHERE deptno =20;
+SELECT empno, ename, sal, deptno FROM emp WHERE sal>800 AND sal>2975 AND sal >3000;
+-> 위 두 쿼리를 서브쿼리로 작성
+SELECT empno, ename, sal, deptno FROM emp WHERE sal > ALL ( SELECT sal FROM emp WHERE deptno = 20);
+
+다중열 서브쿼리
+서브쿼리의 결과가 두 개 이상의 컬럼으로 반환되어 메인 쿼리에 전달하는 쿼리
+SELECT empno, ename, sal, deptno FROM emp WHERE (deptno, sal) IN (SELECT deptno , sal FROM emp WHERE deptno = 30);
+
+부서별로 가장 급여를 적게 받는 사원 정보를 출력
+SELECT  empno, ename, sal, deptno FROM emp WHERE (deptno, sal) IN (SELECT deptno ,MIN(sal) FROM emp GROUP BY deptno);
+
+부서별로 가장 급여를 적게 받는 사원과 동일 급여를 받는 사원 정보를 출력
+SELECT empno, ename, sal, deptno FROM emp WHERE sal IN (SELECT MIN(sal) FROM emp GROUP BY deptno);
+
+스칼라 서브쿼리
+스칼라 값은 단일 값을 의미함. 결과 값이 단일 행, 단일 열의 스칼라 값으로 반환 됨.
+만약 결과값이 다중 행이거나 다중 열이라면 DBMS는 그 중 어떠한 행, 어떠한 열을 출력해야 하는지 알 수 없어 에러를 출력
+
+SELECT deptno, (SELECT dname FROM dept WHERE deptno = e.deptno) , SUM(sal) FROM emp e GROUP BY deptno;
