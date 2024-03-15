@@ -932,3 +932,67 @@ RENAME employee TO employee2;
 
 테이블 삭제
 DROP TABLE employee2;
+
+ON DELETE CASCADE
+부모 테이블의 컬럼을 삭제하면서 자식 테이블의 자식 데이터를 모두 삭제
+
+CREATE TABLE s_member (
+id VARCHAR2(20) PRIMARY KEY,
+name VARCHAR2(30)
+);
+
+CREATE TABLE s_member_detail(
+num NUMBER PRIMARY KEY,
+content VARCHAR2(4000) NOT NULL,
+id VARCHAR2(20) NOT NULL REFERENCES s_member (id) ON DELETE CASCADE
+);
+
+INSERT INTO s_member (id, name) VALUES('dragon','홍길동');
+INSERT INTO s_member (id,name) VALUES ('sky', '박문수');
+
+
+INSERT INTO s_member_detail(num,content,id) VALUES (1,'오늘은 금요일','sky');
+INSERT INTO s_member_detail(num,content,id) VALUES (2,'내일은 토요일','sky');
+INSERT INTO s_member_detail(num,content,id) VALUES (3,'모레는 일요일','sky');
+
+DELETE FROM s_member WHERE id = 'sky';
+COMMIT;
+
+[실습 문제]
+1. student 라는 이름으로 테이블 생성
+컬럼명         id                 name               age            score  
+데이터 타입 VARCHAR2(10)  VARCHAR2(30)    NUMBER(3)    NUMBER(3)
+제약 조건 PRIMARY KEY       NOT NULL        NOT NULL       NOT NULL
+
+CREATE TABLE STUDENT (
+id VARCHAR2(10) PRIMARY KEY,
+name VARCHAR2(30) NOT NULL,
+age NUMBER(3)  NOT NULL,
+score NUMBER(3) NOT NULL
+);
+COMMIT;
+
+2. 데이터를 아래와 같이 입력하세요
+id                   name               age            score  
+dragon            홍길동               21             100
+sky                 장영실               21              99
+blue                박문수              34               88
+
+INSERT INTO student VALUES('dragon','홍길동',21,100);
+INSERT INTO student VALUES('sky','장영실',21,99);
+INSERT INTO student VALUES('blue','박문수',34,88);
+COMMIT;
+
+3. 데이터 읽기 STUDENT TABLE 에서 성적 합계를 구하세요.
+SELECT SUM(score) FROM student;
+
+뷰(VIEW)
+논리적으로 하나 이상의 테이블에 있는 데이터의 부분 집합
+- 데이터 액세스를 제한하기 위해
+- 복잡한 질의를 쉽게 작성하기 위해
+- 데이터 독립성을 제공하기 위해
+- 동일한 데이터로부터 다양한 결과를 얻기 위해
+
+VIEW 생성
+CREATE OR REPLACE VIew emp10_view
+AS SELECT empno id_number, ename name, sal *12 ann_salary FROM emp WHERE deptno =10;
