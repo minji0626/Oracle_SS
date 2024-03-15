@@ -803,3 +803,132 @@ SELECT ename , sal FROm emp WHERE mgr IN (SELECT empno FROM emp WHERE ename = 'K
 SELECT e.ename, d.dname , e.sal, s.grade FROM emp e, dept d, salgrade s WHERE d.deptno= e.deptno AND e.sal BETWEEN s.losal AND s.hisal AND e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
 
 SELECT e.ename , d.dname, e.sal, s.grade FROM emp e JOIn dept d ON e.deptno = d.deptno JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal WHERE e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
+
+INSERT문 : 테이블에 행을 삽입
+
+전체 데이터 삽입(전체 컬럼 명시시)
+INSERT INTO emp (empno,ename,job,mgr,hiredate,sal,comm,deptno) VALUES (8000,'DENNIS','SALESMAN',7698,'99/01/22',1700,200,30)
+SELECT * FROM emp;
+
+전체 데이터 삽입할 때는 컬럼명 생략 가능
+INSERT INTO emp VALUES (8001, 'SUNNY','SALESMAN', 7698, '99/03/01',1000,300,30);
+SELECT * FROM emp;
+
+[NULL 삽입 방법]
+값이 입력되지 않는 컬럼은 제외
+INSERT INTO emp(empno,ename,job, mgr,hiredate,sal,deptno) VALUES (8003,'PETER','CLERK',7698,'22/11/06',1700,20);
+SELECT * FROM emp;
+
+값이 입력되지 않는 칼럼을 제외하지 않았을 경우
+INSERT INTO emp(empno,ename,job, mgr,hiredate,sal,comm,deptno) VALUES(8004, 'ANNIE','CLERK', 7698, '22/11/06',1800,NULL,30);
+
+날짜의 삽입
+INSERT INTO emp(empno,ename,job, mgr,hiredate,sal,comm,deptno) VALUES (8005,'MICHAEL','CLERK', 7698, TO_DATE('22/11/06', 'YY/MM/DD'), 1800,NULL,30);
+
+UPDATE문 : 행 단위로 데이터 갱신
+UPDATE emp SET mgr = 7900 WHERE empno = 8000;
+UPDATE emp SET ename = 'MARIA' , sal=2500, comm =500 WHERE empno=8000;
+
+WHERE 절을 명시하지 않으면 전체 행의 데이터를 수정한다.
+UPDATE emp SET ename='KINGKONG'; 
+
+ROLLBACK; -- 되돌리기와 비슷한 개념
+SELECT * FROM emp;
+
+DELETE 문 : 행 삭제
+DELETE FROM emp WHERE empno=7369;
+
+WHERE 절을 명시하지 않으면 모든 행이 삭제된다.
+DELETE FROM emp;
+
+데이터베이스 트랜잭션
+트랜잭션은 데이터 처리의 한 단위이다.
+오라클 서버에서 발생하는 SQL문들을 하나의 논리적인 작업단위로써 성공하거나 실패하는 일련의 SQL문을 트랜잭션이라고 할 수 있다.
+트랜잭션은 데이터를 일관되게 변경하는 DML문장으로 구성됨
+
+데이터베이스 객체
+
+테이블 : 기본 저장 단위로 행과 열로 구성
+테이블은 기본적인 데이터 저장 단위
+레코드와 컬럼으로 구성
+레코드(record, row) : 테이블의 데이터는 행에 저장
+컬럼(column) : 테이블의 각 컬럼은 데이터를 구별할 수 있는 속성을 표현
+
+이름 지정 규칙
+- 문자로 시작해야 함
+- 1자부터 30자까지 가능
+- A-Z, a-z, 0-9, _, $, #만 포함해야 함
+- 동일한 사용자가 소유한 다른 객체의 이름과 중복되지 않아야 함.
+- Oracle server의 예약어가 아니어야 함.
+
+- 사용자가 소유한 테이블의 이름
+SELECT table_name FROM user_tables;
+
+- 사용자가 소유한 개별 객체 유형
+SELECT DISTINCT object_type FROM user_objects;
+
+- 사용자가 소유한 테이블, 뷰, 동의어 및 시퀀스
+SELECT * FROM user_catalog;
+
+테이블의 생성
+CREATE TABLE employee (
+empno NUMBER(6) ,
+name VARCHAR2(30) NOT NULL,
+salary NUMBER(8,2),
+hire_date DATE DEFAULT SYSDATE,
+CONSTRAINT employee_pk_empno PRIMARY KEY(empno)
+);
+
+INSERT INTO employee(empno,name,salary) VALUES(100,'홍길동',1000.23);
+COMMIT;
+
+테이블 생성시 PRIMARY KEY 및 FOREIGN KEY 제약 조건 추가하기
+CREATE TABLE SUSER (
+id  VARCHAR2(20),
+name  VARCHAR2(30),
+CONSTRAINT suser_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE SBOARD (
+num NUMBER,
+id VARCHAR2(20) NOT NULL,
+content VARCHAR2(4000) NOT NULL,
+CONSTRAINT sboard_pk PRIMARY KEY(num),
+CONSTRAINT sboard_fk FOREIGN KEY (id) REFERENCES suser (id)
+);
+
+INSERT INTO suser (id,name) VALUES ('dragon', '홍길동');
+INSERT INTO suser (id,name) VALUES ('sky', '박문수');
+
+INSERT INTO sboard (num, id, content) VALUES (1,'sky', '오늘은 금요일');
+INSERT INTO sboard (num, id, content) VALUES (2,'dragon', '내일은 토요일');
+
+INSERT INTO sboard (num, id, content) VALUES (3,'blue','모레는 일요일'); -- 부모키에 blue가 없기 때문에 데이터 삽입이 불가능하다.
+DELETE FROM suser WHERE id = 'sky'; -- 자식 데이터가 존재하기 때문에 삭제가 불가능하다
+
+COMMIT;
+
+SELECT * FROM suser;
+SELECT * FROM  sboard;
+
+두개의 테이블 join 작업
+SELECT * FROM suser JOIN sboard USING(id);
+
+테이블의 관리
+ADD 연산자 : 테이블에 새로운 컬럼을 추가
+ALTER TABLE employee ADD (addr VARCHAR(2));
+
+제약 조건 추가
+ALTER TABLE employee ADD CONSTRAINT employee_pk PRIMARY KEY (id);
+
+modify 연산자 : 테이블의 컬럼을 수정 하거나 not null 컬럼으로 변경 할 수 있음
+ALTER TABLE employee MODIFY (salary NUMBER(10, 2) NOT NULL);
+
+컬럼명 변경
+ALTER TABLE employee RENAME COLUMN salary TO sal;
+
+테이블명 변경
+RENAME employee TO employee2;
+
+테이블 삭제
+DROP TABLE employee2;
