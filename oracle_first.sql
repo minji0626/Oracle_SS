@@ -803,8 +803,3 @@ SELECT ename , sal FROm emp WHERE mgr IN (SELECT empno FROM emp WHERE ename = 'K
 SELECT e.ename, d.dname , e.sal, s.grade FROM emp e, dept d, salgrade s WHERE d.deptno= e.deptno AND e.sal BETWEEN s.losal AND s.hisal AND e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
 
 SELECT e.ename , d.dname, e.sal, s.grade FROM emp e JOIn dept d ON e.deptno = d.deptno JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal WHERE e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
-
-
-
-
-
