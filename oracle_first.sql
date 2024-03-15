@@ -804,6 +804,40 @@ SELECT e.ename, d.dname , e.sal, s.grade FROM emp e, dept d, salgrade s WHERE d.
 
 SELECT e.ename , d.dname, e.sal, s.grade FROM emp e JOIn dept d ON e.deptno = d.deptno JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal WHERE e.sal= (SELECT MAX(sal) FROM emp WHERE deptno = 20);
 
+8. 총급여 (sal + comm) 가 평균 급여보다 많은 급여를 받는 사람의 부서번호, 이름, 총급여, 커미션을 출력하세요. 완료
+커미션은 있을 경우'O' 표시 , 없을 경우 'X' 표시하고 컬럼 명은 "comm유무"로 출력하세요.
+
+SELECT deptno, ename, (sal+NVL(comm,0)) "총급여" , NVL2(comm, 'O' ,'X') "comm 유무" 
+FROM emp 
+WHERE (sal+NVL(comm,0)) > (SELECT AVG(sal) FROM emp);
+
+SELECT deptno,ename, sal+NVL(comm,0) 총급여, 
+         CASE WHEN comm IS NOT NULL THEN '0'
+         ELSE 'X'
+         END  comm유무
+FROM emp 
+WHERE (sal+NVL(comm,0)) > (SELECT AVG(sal) FROM emp);
+
+9. CHICAGO 지역에서 근무하는 직원의 평균 급여보다 높은 급여를 받는 사원의 이름과 급여, 지역명을 출력하세요.완료
+SELECT e.ename, e.sal, d.loc FROM emp e, dept d WHERE d.deptno = e.deptno 
+AND e.sal > (SELECT AVG(e.sal) FROM emp e, dept d WHERE d.deptno = e.deptno AND d.loc = 'CHICAGO');
+
+SELECT AVG(sal) FROM emp WHERE deptno IN (SELECT deptno FROM dept WHERE loc = 'CHICAGO');
+
+10. 커미션이 없는 사원들 중 월급이 가장 높은 사원의 이름과 급여 등급을 출력하세요
+SELECT e.ename, s.grade FROM emp e, salgrade s WHERE e.sal BETWEEN s.losal AND s.hisal 
+AND e.sal = (SELECT MAX(sal) FROM emp WHERE comm IS NULL);
+
+11. SMITH 의 직속 상사(MGR)의 이름과 부서명, 근무 지역을 출력하세요. 완료
+SELECT e.ename, d.dname , d.loc FROM dept d , emp e WHERE d.deptno = e.deptno AND e.empno IN (SELECT mgr FROM emp WHERE ename = 'SMITH');
+
+12. ALLEN보다 급여를 많이받는 사원 중에서 입사일이 가장 빠른 사원과 동일한 날짜에 입사한 사원의 이름, 입사일, 급여를 출력하세요 완료
+SELECT ename , hiredate, sal FROM emp WHERE hiredate = (SELECT MIN(hiredate) FROM emp WHERE sal > (SELECT sal FROM emp WHERE ename = 'ALLEN')) ; 
+
+SELECT ename , hiredate, sal FROM emp WHERE hiredate = 
+(SELECT MIN(hiredate) FROM emp WHERE sal> (SELECT sal FROM emp WHERE ename = 'ALLEN'));
+
+
 INSERT문 : 테이블에 행을 삽입
 
 전체 데이터 삽입(전체 컬럼 명시시)
@@ -996,3 +1030,66 @@ SELECT SUM(score) FROM student;
 VIEW 생성
 CREATE OR REPLACE VIew emp10_view
 AS SELECT empno id_number, ename name, sal *12 ann_salary FROM emp WHERE deptno =10;
+
+SELECT * FROM emp10_view;
+
+CREATE OR REPLACE VIEW emp_info_view 
+AS SELECT e.empno, e.ename, d.deptno, d.loc, d.dname FROM emp e, dept d WHERE e.deptno = d.deptno;
+
+SELECT * FROM emp_info_view;
+
+View를 통한 데이터 변경하기
+일반적으로 view는 조회용으로 많이 사용되지만 아래와 같이 데이터를 변경할 수 있음
+UPDATE emp10_view SET name ='SCOTT' WHERE id_number = 7839;
+
+가상열 때문에 등록이 제한
+INSERT INTO emp10_view(id_number,name,ann_salary) VALUES(8000,'JOHN',19000);
+
+WITH READ ONLY : 읽기 전용 뷰를 생성하는 옵션
+
+CREATE OR REPLACE VIEW emp20_view 
+AS SELECT empno id_number , ename name, sal * 12 ann_salary FROM emp WHERE deptno = 20 WITH READ ONLY;
+
+
+UPDATE emp20_view SET NAME='DAVID' WHERE id_number = 7902;
+
+VIEW 수정하기
+CREATE OR REPLACE VIEW emp10_view
+(id_number, name, sal, department_id)
+AS SELECT empno, ename, sal, deptno FROM emp WHERE deptno = 10;
+SELECT * FROM emp10_view;
+
+VIEW의 삭제
+DROP VIEW emp10_view;
+
+SEQUENCE
+-유일한 값을 생성해주는 오라클 객체
+시퀀스를 생성하면 기본키와 같이 순차적으로 증가하는 컬럼을 자동적으로 생성할 수 있음
+보통 primary key 값을 생성하기 위해 사용
+
+SEQUENCE 생성
+CREATE SEQUENCE test_seq
+START WITH 1
+INCREMENT BY 1
+MAXVALUE 100000; 
+--시작 값이 1 이고 1씩 증가하고 최대값이 100000이 되는 시퀀스 
+
+CURRVAL : 현재 값 반환
+NEXTVAL : 현재 시퀀스 값의 다음 값 반환
+
+SELECT test_seq.NEXTVAL FROM dual;
+SELECT test_seq.CURRVAL FROM dual;
+
+sboard 테이블에 데이터를 삽입할 때 시퀀스 활용
+INSERT INTO sboard(num,id,content)
+VALUES (test_seq.NEXTVAL , 'sky','강남');
+
+SELECT * FROM sboard;
+
+시퀀스 수정
+START WITH  수정 불가능
+
+ALTER SEQUENCE test_seq INCREMENT BY 5;
+
+시퀀스 삭제 
+DROP SEQUENCE test_seq;
