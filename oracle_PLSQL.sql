@@ -129,3 +129,268 @@ BEGIN
 END;
 
 레코드
+테이블의 컬럼들이 서로 다른 유형의 데이터 타입으로 구성되듯이 
+레코드 역시 해당 필드 (레코드에서는 요소란 말 대신 필드란 용어를 사용함)들이 각기 다른 데이터 타입을 가질 수 있음
+
+DECLARE
+-- TYPE으로 선언한 레코드
+TYPE RECORD1 IS RECORD (deptno NUMBER NOT NULL := 50,
+                                 dname VARCHAR2(14),
+                                 loc VARCHAR2(13));
+-- 위에서 선언한 record1을 받는 변수 선언
+rec1 RECORD1;
+BEGIN
+--record1 타입의  rec1의 dname 필드에 값 할당.
+rec1.dname := 'RECORD';
+rec1.loc := 'Seoul';
+--rec1 레코드 값을 dept 테이블에 insert
+INSERT INTO dept VALUES rec1;
+COMMIT;
+EXCEPTION  WHEN OTHERS THEN ROLLBACK;
+END; 
+
+IF 문
+DECLARE
+   grade CHAR(1);
+BEGIN
+-- 변수의 초기화
+   grade := 'B';
+IF grade ='A' THEN
+DBMS_OUTPUT.PUT_LINE('Excellent');
+ELSIF grade ='B' THEN
+DBMS_OUTPUT.PUT_LINE('Good');
+ELSIF grade = 'C' THEN
+DBMS_OUTPUT.PUT_LINE('Fair');
+ELSIF grade = 'D' THEN
+DBMS_OUTPUT.PUT_LINE('Poor');
+END IF;
+END;
+
+CASE 문
+DECLARE
+grade CHAR(1);
+BEGIN
+grade :=('C');
+   case grade
+WHEN 'A' THEN
+DBMS_OUTPUT.PUT_LINE('Excellent');
+WHEN 'B' THEN
+DBMS_OUTPUT.PUT_LINE('Good');
+WHEN 'C' THEN
+DBMS_OUTPUT.PUT_LINE('Fair');
+WHEN 'D' THEN
+DBMS_OUTPUT.PUT_LINE('Poor');
+ELSE
+DBMS_OUTPUT.PUT_LINE('NOT FOUND');
+END case;
+END;
+
+LOOP 문
+DECLARE
+   test_number INTEGER;
+   result_num INTEGER;
+ BEGIN
+   test_number :=1;
+ LOOP
+ result_num := 2 * test_number;
+ IF result_num > 20 THEN
+   EXIT; -- 블럭 종료
+ ELSE
+   DBMS_OUTPUT.PUT_LINE(result_num);
+   END IF;
+test_number := test_number + 1;
+ END LOOP;
+-- loop 블럭을 빠져나오면 아래 코드를 실행한다.
+DBMS_OUTPUT.PUT_LINE('프로그램 종료');
+END;
+
+
+DECLARE
+   test_number INTEGER;
+   result_num INTEGER;
+BEGIN
+--변수 초기화
+test_number := 1;
+Loop
+   result_num := 2 * test_number;
+EXIT WHEN result_num > 20;          -- 조건 체크
+DBMS_OUTPUT.PUT_LINE(result_num);
+test_number := test_number + 1;
+END LOOP;
+END;
+
+WHILE LOOP 문
+
+
+DECLARE 
+test_number INTEGER;
+result_num INTEGER;
+BEGIN
+ test_number := 1;
+ result_num := 0;
+WHILE result_num > 20 LOOP
+   result_num := 2 * test_number;
+   DBMS_OUTPUT.PUT_LINE(result_num);
+test_number := test_number + 1;
+END LOOP;
+END;
+
+
+FOR .... LOOP 문
+
+DECLARE
+test_number INTEGER;
+result_num INTEGER;
+BEGIN
+ FOR test_number IN 1..10 LOOP
+result_num := 2 * test_number;
+DBMS_OUTPUT.PUT_LINE(result_num);
+END LOOP;
+END;
+
+
+DECLARE
+test_number INTEGER;
+result_num INTEGER;
+BEGIN
+ FOR test_number IN REVERSE 1..10 LOOP
+result_num := 2 * test_number;
+DBMS_OUTPUT.PUT_LINE(result_num);
+END LOOP;
+END;
+
+
+CURSOR(커서) : 쿼리에 의해 반환되는 결과는 메모리 상에 위치하게 되는데 
+                     PL/SQL에서는 바로 커서(CURSOR)를 사용하여 이 결과 집합에 접근할 수 있다.
+
+DECLARE
+-- 커서 선언 : 커서에 이름을 주고, 이 커서가 접근하려는 쿼리를 정의
+CURSOR emp_csr IS
+SELECT empno
+FROM emp
+WHERE deptno = 10;
+emp_no emp.empno%TYPE;
+BEGIN
+-- 커서 열기 : 커서로 정의된 쿼리를 실행하는 역할
+OPEN emp_csr;
+Loop
+   FETCH emp_csr into emp_no;
+--%NOT FOUND : 커서에서만 사용 가능한 속성 더이상 패치(할당)할 로우가 없음을 의미한다
+EXIT WHEN emp_csr%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(emp_no);
+END LOOP;
+CLOSE emp_csr;
+END;
+
+함수
+
+입력받은 값으로부터 10%의 세율을 얻는 함수
+CREATE OR REPLACE FUNCTION tax(p_value IN NUMBER)
+   RETURN NUMBER
+IS
+BEGIN
+   RETURN p_value * 0.1;
+END;
+
+SELECT TAX(100) FROM dual;
+SELECT empno,ename, sal, TAX(sal) tax FROM emp;
+
+급여와 커미션을 합쳐서 세금 계산
+CREATE OR REPLACE FUNCTION tax2(p_sal IN emp.sal%TYPE,
+                                                p_comm emp.comm%TYPE)
+      RETURN NUMBER
+IS 
+BEGIN
+RETURN (p_sal + NVL(p_comm , 0 ) ) * 0.1;
+END;
+
+SELECT empno, ename, sal+NVL(comm,0) "실급여", TAX2( sal,comm) AS tax FROM emp;
+
+급여(커미션 포함)에 대한 세율을 다음과 같이 정의함.
+급여가 월 $1000이상 $2000이하면 10%, $2000을 초과하면 20%를 적용함.
+CREATE OR REPLACE FUNCTION tax3(p_sal IN emp.sal%TYPE,
+                                                p_comm emp.comm%TYPE)
+RETURN NUMBER
+IS 
+-- 변수 선언
+l_sum NUMBER;
+l_tax NUMBER;
+
+BEGIN 
+l_sum := p_sal + NVL(p_comm,0);
+
+IF l_sum < 1000 THEN 
+   l_tax := l_sum * 0.05;
+ELSIF l_sum <= 2000  THEN
+      l_tax := l_sum * 0.1;
+ELSE
+      l_tax := l_sum * 0.2;
+END IF;
+RETURN(l_tax);
+END;
+
+SELECT empno, ename, sal+NVL(comm,0), TAX3(sal,comm) FROM emp;
+
+사원 번호를 통해서 급여를 알려주는 함수
+CREATE OR REPLACE FUNCTION   emp_salaries(emp_no NUMBER)
+RETURN NUMBER
+IS
+-- 변수 선언
+nSalaries NUMBER(9);
+BEGIN
+SELECT sal
+-- 결과행이 단일행일 경우 INTO를 이용해서 읽어온 값을 변수에 담을 수 있다.
+INTO nSalaries
+FROM emp
+WHERE empno = emp_no;
+
+RETURN nSalaries;
+END;
+
+SELECT EMP_SALARIES(7839) FROM  dual;
+SELECT empno, ename, EMP_SALARIES(empno) FROM emp;
+
+부서번호를 전달하면 부서명을 구할 수 있는 함수
+CREATE OR REPLACE FUNCTION get_dept_name(dept_no NUMBER)
+RETURN VARCHAR2
+IS
+sDeptName VARCHAR2(30);
+
+BEGIN
+SELECT dname
+INTO sDeptName
+FROM dept
+WHERE deptno = dept_no;
+
+RETURN sDeptName;
+END;
+
+SELECT GET_DEPT_NAME(10) FROM dual;
+SELECT deptno, GET_DEPT_NAME(deptno) "Department NAME" FROM dept;
+SELECT empno, ename, sal, GET_DEPT_NAME(deptno) FROM emp;
+
+ [실습 문제]
+1. 두 숫자를 제공하면 덧셈을 해서 결과값을 반환하는 함수를 정의하시오. (add_num)
+CREATE OR REPLACE FUNCTION add_num (num1 INTEGER, num2 INTEGER)
+RETURN INTEGER
+IS
+BEGIN
+RETURN num1 +num2;
+END;
+SELECT ADD_NUM(2,5) FROM dual;
+
+2. 부서 번호를 입력하면 해당 부서에서 근무하는 사원 수를 반환하는 함수를 정의하시오. (get_emp_count)
+CREATE OR REPLACE FUNCTION get_emp_count(dept_no IN emp.deptno%TYPE)
+RETURN INTEGER
+IS
+emp_count INTEGER;
+BEGIN
+SELECT COUNT(empno)
+INTO emp_count
+FROM emp
+WHERE deptno = dept_no;
+
+RETURN emp_count
+END;
+
+SELECT empno, ename, deptno, GET_EMP_COUNT(empno) FROM emp;
