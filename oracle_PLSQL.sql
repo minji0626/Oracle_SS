@@ -64,7 +64,8 @@ DECLARE
 BEGIN
    -- 변수 초기화
    counter := 10;
-   
-   
-   
+   counter := counter/0;
+   DBMS_OUTPUT.PUT_LINE(counter);
+   EXCEPTION WHEN OTHERS THEN
+   DBMS_OUTPUT.PUT_LINE('errors');
 END;
