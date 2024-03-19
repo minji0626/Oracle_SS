@@ -349,6 +349,7 @@ END;
 
 SELECT EMP_SALARIES(7839) FROM  dual;
 SELECT empno, ename, EMP_SALARIES(empno) FROM emp;
+
 부서번호를 전달하면 부서명을 구할 수 있는 함수
 CREATE OR REPLACE FUNCTION get_dept_name(dept_no NUMBER)
 RETURN VARCHAR2
@@ -433,3 +434,214 @@ RETURN m_name;
 END;
 --
 5. emp 테이블을 이용해서 사원 번호를 입력하면 급여 등급을 구하는 함수를 정의하세요. GET_SAL_GRADE
+--
+CREATE OR REPLACE FUNCTION GET_SAL_GRADE (emp_no emp.empno%TYPE)
+RETURN CHAR
+IS
+   sgrade CHAR(1);
+BEGIN
+         SELECT CASE WHEN sal>=4000 THEN 'A'
+                           WHEN sal>=3000 AND sal < 4000 THEN 'B'
+                           WHEN sal>=2000 AND sal < 3000 THEN 'C'
+                           WHEN sal>=1000 AND sal < 2000 THEN 'D'
+                           ELSE 'F'
+      END grade
+INTO sgrade
+FROM emp
+WHERE empno = emp_no;
+
+RETURN sgrade;
+END;
+--
+-- 기존의 테이블을 사용함
+CREATE OR REPLACE FUNCTION GET_SAL_GRADE (emp_no emp.empno%TYPE)
+RETURN NUMBER
+IS
+sgrade NUMBER;
+BEGIN
+SELECT s.grade
+INTO sgrade
+FROM emp e, salgrade s
+WHERE e.sal BETWEEN s.losal AND s.hisal AND e.empno = emp_no;
+RETURN sgrade;
+END;
+--
+SELECT ename,sal,GET_SAL_GRADE(empno) "급여등급" FROM emp ORDER BY "급여등급";
+
+6. 사원번호를 입력하면 근무지를 구하는 함수 (find_loc) varchar2 이용
+-- 서브 쿼리 형태
+CREATE OR REPLACE FUNCTION FIND_LOC (emp_no emp.empno%TYPE)
+RETURN VARCHAR2
+IS
+-- 변수 선언
+dloc VARCHAR2(14);
+BEGIN
+SELECT loc
+INTO dloc
+FROM dept 
+WHERE deptno = (SELECT deptno FROM emp WHERE empno = emp_no);
+RETURN dloc;
+END;
+--
+-- Join 형태
+CREATE OR REPLACE FUNCTION FIND_LOC (emp_no emp.empno%TYPE)
+RETURN VARCHAR2
+IS
+dloc VARCHAR2(14);
+BEGIN
+SELECT d.loc
+INTO dloc
+FROM emp e JOIN dept d
+ON e.deptno = d.deptno 
+WHERE e.empno = emp_no;
+RETURN dloc;
+END;
+----------------------------------------------------------------------------------------------
+SELECT FIND_LOC(empno), ename FROM emp;
+----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------
+생성된 함수 확인하기
+데이터 사전 (DATA Dictionary)을 통해 검색. 
+데이터 사전에 저장된 모든 값은 대문자로 저장되기 때문에 대문자로 검색.
+SELECT object_name, object_type FROM user_objects WHERE object_type = 'FUNCTION';
+----------------------------------------------------------------------------------------------
+작성된 함수의 소스 코드 확인
+SELECT text FROM user_source 
+WHERE type='FUNCTION' AND name='TAX';
+----------------------------------------------------------------------------------------------
+프로시저
+CREATE OR REPLACE PROCEDURE hello_world
+IS 
+-- 변수 선언
+message VARCHAR2(100);
+BEGIN
+message := 'Hello World~~';
+DBMS_OUTPUT.PUT_LINE(message);
+END;
+----------------------------------------------------------------------------------------------
+프로시저 실행
+EXECUTE HELLO_WORLD;
+----------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE HELLO_ORACLE(p_message IN VARCHAR2)
+IS
+BEGIN
+DBMS_OUTPUT.PUT_LINE(p_message);
+END;
+----------------------------------------------------------------------------------------------
+EXECUTE HELLO_ORACLE('KOREA');
+----------------------------------------------------------------------------------------------
+작성된 STORED PROCEDURE 확인
+SELECT object_name, object_type FROM user_objects WHERE object_type = 'PROCEDURE';
+----------------------------------------------------------------------------------------------
+작성된 프로시저의 소스 코드 확인
+SELECT text FROM user_source WHERE type='PROCEDURE';
+----------------------------------------------------------------------------------------------
+부서테이블에 부서 정보를 입력하는 프로시저를 생성
+CREATE OR REPLACE PROCEDURE add_department(p_deptno IN dept.deptno%TYPE,
+                                                                     p_dname IN dept.dname%TYPE,
+                                                                     p_loc IN dept.loc%TYPE)
+IS
+BEGIN
+-- PARAMETER 변수에 입력받은 값으로 부서(dept)테이블의 각 컬럼에 데이터를 추가하고
+-- 정상적으로 TRANSACTION 종료
+   INSERT INTO dept
+   VALUES(p_deptno, p_dname,p_loc);
+   COMMIT;
+   EXCEPTION WHEN OTHERS THEN
+   DBMS_OUTPUT.PUT_LINE(p_dname || 'register is failed');
+   ROLLBACK;
+END;
+----------------------------------------------------------------------------------------------
+EXEC ADD_DEPARTMENT(60,'IT SERVICE', 'BUSAN');
+SELECT * FROM dept;
+---------------------------------------------------------------------------------------------
+사원 테이블에 사원정보를 저장
+CREATE OR  REPLACE PROCEDURE register_emp(e_empno IN emp.empno%TYPE,
+      e_ename IN emp.ename%TYPE,  
+      e_job IN emp.job%TYPE, 
+      e_mgr IN emp.mgr%TYPE,  
+      e_sal IN emp.sal%TYPE,
+      e_comm IN emp.comm%TYPE, 
+      e_deptno IN emp.deptno%TYPE )
+IS
+BEGIN
+INSERT INTO emp (empno,ename, job, mgr, hiredate, sal, comm, deptno)
+VALUES (e_empno,e_ename,e_job, e_mgr, SYSDATE, e_sal, e_comm, e_deptno);
+COMMIT;
+
+EXCEPTION WHEN OTHERS THEN
+   DBMS_OUTPUT.PUT_LINE(e_ename || 'Register Failed!');
+   ROLLBACK;
+END;
+----------------------------------------------------------------------------------------------
+EXEC register_emp(9000,'PETER','MANAGER', 7902, 6000, 200, 30);
+----------------------------------------------------------------------------------------------
+부서 번호를 통해서 부서명과 부서의 위치 구하기
+CREATE OR REPLACE PROCEDURE output_department(
+                                             p_dept_no IN dept.deptno%TYPE)
+IS
+-- 변수 선언
+d_dname dept.dname%TYPE;
+d_loc dept.loc%TYPE;
+
+BEGIN
+-- PARANMETER 변수로부터 부서번호를 받아 해당 부서의 정보 질의
+SELECT dname, loc
+INTO d_dname, d_loc
+FROM dept
+WHERE deptno = p_dept_no;
+
+DBMS_OUTPUT.PUT_LINE(d_dname || ',' || d_loc);
+END;
+----------------------------------------------------------------------------------------------
+EXEC OUTPUT_DEPARTMENT(10);
+----------------------------------------------------------------------------------------------
+사원이 입사한 연도를 입력해서 사원 정보 구하기
+CREATE OR REPLACE PROCEDURE info_hiredate(p_year IN VARCHAR2)
+IS
+-- %ROWTYPE 으로 데이터 타입이 지정되어 있는 
+-- 사원테이블(emp)의 하나의 행이 가지는 모든 컬럼의 데이터 타입을 가져옴
+e_emp emp%ROWTYPE; --record 형태
+BEGIN
+SELECT empno, ename, sal
+-- 단일행일 경우에 INTO 사용 할 수 있지만 다중행일 경우에는 오류가 발생한다.
+-- 다중행은 CURSOR를 사용해야한다.
+INTO e_emp.empno, e_emp.ename, e_emp.sal
+FROM emp
+WHERE TO_CHAR(hiredate,'YYYY') = p_year;
+DBMS_OUTPUT.PUT_LINE(e_emp.empno || ',' || e_emp.ename || ',' || e_emp.sal);
+END;
+----------------------------------------------------------------------------------------------
+EXEC INFO_HIREDATE('1980');
+----------------------------------------------------------------------------------------------
+커서를 이용하여 질의 수행 결과 반환되는 여러행을 처리
+CREATE OR REPLACE PROCEDURE info_hiredate(p_year IN VARCHAR2)
+IS 
+e_emp emp%ROWTYPE;
+-- 커서 선언
+CURSOR emp_cur IS 
+SELECT empno, ename, sal
+FROM emp
+WHERE TO_CHAR(hiredate, 'YYYY') = p_year;
+BEGIN
+-- 커서 열기
+OPEN emp_cur;
+-- 커서로부터 데이터 읽기
+LOOP
+   FETCH emp_cur INTO e_emp.empno , e_emp.ename , e_emp.sal;
+   EXIT WHEN emp_cur%NOTFOUND;
+   DBMS_OUTPUT.PUT_LINE(e_emp.empno || ',' || e_emp.ename || ',' || e_emp.sal);
+END LOOP;
+--커서 닫기
+CLOSE emp_cur;
+END;
+
+
+
+
+
+
+
+
+
+
