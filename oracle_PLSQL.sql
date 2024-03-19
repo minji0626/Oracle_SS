@@ -635,13 +635,67 @@ END LOOP;
 --커서 닫기
 CLOSE emp_cur;
 END;
+----------------------------------------------------------------------------------------------
+EXEC INFO_HIREDATE('1981');
+----------------------------------------------------------------------------------------------
+SALES 부서에 속한 사원의 정보 보기
+CREATE OR REPLACE PROCEDURE emp_info (p_dept IN dept.dname%TYPE)
+IS
+-- 커서 선언
+CURSOR emp_cur IS
+SELECT empno, ename
+FROM emp e JOIN dept d
+ON e.deptno = d.deptno
+WHERE dname = UPPER(p_dept);
+-- 변수 선언
+e_empno emp.empno%TYPE;
+e_ename emp.ename%TYPE;
+BEGIN
+   OPEN emp_cur;
+   -- 커서로부터 데이터 일기
+   LOOP 
+   FETCH emp_cur INTO e_empno, e_ename;
+   EXIT WHEN emp_cur%NOTFOUND;
+   DBMS_OUTPUT.PUT_LINE(e_empno || ',' || e_ename);
+   END LOOP;
+   CLOSE emp_cur;
+END;
+----------------------------------------------------------------------------------------------
+EXEC EMP_INFO('SALES');
+----------------------------------------------------------------------------------------------
+[실습문제]
+1) 업무(job)를 입력하여 해당 업무를 수행하는 사원들의 사원 번호,이름, 급여, 업무를 출력하세요.
+CREATE OR REPLACE PROCEDURE job_info(p_job IN emp.job%TYPE)
+IS
+e_emp emp%ROWTYPE;
+CURSOR emp_cur IS
+SELECT empno, ename, sal, job
+FROM emp
+WHERE p_job = job;
+BEGIN
+OPEN emp_cur;
+LOOP
+   FETCH emp_cur INTO e_emp.empno , e_emp.ename , e_emp.sal , e_emp.job;
+   EXIT WHEN emp_cur%NOTFOUND; 
+DBMS_OUTPUT.PUT_LINE(e_emp.empno || ',' || e_emp.ename || ',' || e_emp.sal || ',' || e_emp.job);
+   END LOOP;
+   CLOSE emp_cur;
+END;
 
+EXEC JOB_INFO('MANAGER');
 
+2) 사원 번호와 새 업무를 입력하면 EMP 테이블의 해당 사원의 업무를 갱신할 수 있는 프로시저를 작성하시오.
+CREATE OR REPLACE PROCEDURE update_job(e_empno IN emp.empno%TYPE,
+                                                            e_job IN emp.job%TYPE)
+IS
+BEGIN
+UPDATE emp SET job = e_job WHERE empno = e_empno;
+COMMIT;
+EXCEPTION
+   WHEN OTHERS THEN
+   DBMS_OUTPUT.PUT_LINE(e_empno || ',' || 'Update Failed');
+   ROLLBACK;
+END;
 
-
-
-
-
-
-
+EXEC UPDATE_JOB(7369,'DRIVER');
 
