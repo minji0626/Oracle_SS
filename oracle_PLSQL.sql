@@ -741,5 +741,7 @@ EXCEPTION WHEN OTHERS THEN
         ROLLBACK;
 END;
 
-EXEC BOOK_INFO(4,'스포츠','쿨서울',20000);
-EXEC BOOK_INFO(5,'도시' , '천국' ,50000);
+EXEC BOOK_INFO(4,'스포츠','쿨서울',20000); -- 삽입
+EXEC BOOK_INFO(5,'도시' , '천국' ,50000); -- 가격 변경
+EXEC BOOK_INFO(4,'도시2','천국',50000); -- 오류 발생
+
