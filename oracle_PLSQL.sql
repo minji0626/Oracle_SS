@@ -349,7 +349,6 @@ END;
 
 SELECT EMP_SALARIES(7839) FROM  dual;
 SELECT empno, ename, EMP_SALARIES(empno) FROM emp;
-
 부서번호를 전달하면 부서명을 구할 수 있는 함수
 CREATE OR REPLACE FUNCTION get_dept_name(dept_no NUMBER)
 RETURN VARCHAR2
@@ -383,14 +382,54 @@ SELECT ADD_NUM(2,5) FROM dual;
 CREATE OR REPLACE FUNCTION get_emp_count(dept_no IN emp.deptno%TYPE)
 RETURN INTEGER
 IS
-emp_count INTEGER;
+   emp_count INTEGER;
 BEGIN
-SELECT COUNT(empno)
-INTO emp_count
-FROM emp
-WHERE deptno = dept_no;
-
-RETURN emp_count
+   SELECT COUNT(empno)
+   INTO emp_count
+   FROM emp
+   WHERE deptno = dept_no;
+RETURN emp_count;
 END;
+SELECT deptno, dname, GET_emp_COUNT(deptno) FROM dept;
 
-SELECT empno, ename, deptno, GET_EMP_COUNT(empno) FROM emp;
+3. emp 테이블의 입사일을 입력하면 근무연차를 구하는 함수를 정의하세요.( 소수점은 절삭한다 TRUNC 사용)
+   GET_INFO_HIREDATE
+CREATE OR REPLACE FUNCTION get_info_hiredate(p_hiredate IN emp.hiredate%TYPE)
+RETURN NUMBER
+IS
+BEGIN
+   RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, p_hiredate) / 12);
+END;
+SELECT empno, ename,GET_INFO_HIREDATE(hiredate) FROM emp;
+
+4. emp 테이블을 이용해서 사원 번호를 입력하면 해당 사원의 관리자 이름을 구하는 함수를 정의하세요
+get_mgr_name
+-- 서브쿼리 형태로 작성
+CREATE OR REPLACE FUNCTION GET_MGR_NAME(emp_no IN emp.empno%TYPE)
+RETURN VARCHAR2
+IS
+-- 변수 선언
+m_name VARCHAR2(10);
+BEGIN
+   SELECT ename
+   INTO  m_name
+   FROM emp
+   WHERE empno = (SELECT mgr FROM emp WHERE empno = emp_no);
+RETURN m_name;
+END;
+SELECT empno, ename, GET_MGR_NAME(empno)  FROM emp;
+--
+-- Join으로 작성
+CREATE OR REPLACE FUNCTION GET_MGR_NAME( emp_no emp.empno%TYPE)
+RETURN VARCHAR2
+IS
+m_name VARCHAR2(10);
+BEGIN
+SELECT m.ename
+INTO m_name
+FROM emp e, emp m
+WHERE e.mgr = m.empno AND e.empno = emp_no ;
+RETURN m_name;
+END;
+--
+5. emp 테이블을 이용해서 사원 번호를 입력하면 급여 등급을 구하는 함수를 정의하세요. GET_SAL_GRADE
