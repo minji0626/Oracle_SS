@@ -699,3 +699,47 @@ END;
 
 EXEC UPDATE_JOB(7369,'DRIVER');
 
+-- Table Book 생성
+CREATE TABLE book(
+   bookid NUMBER PRIMARY KEY,
+   bookname VARCHAR2(60) NOT NULL,
+   publisher VARCHAR2(60)  NOT NULL,
+   price NUMBER NOT NULL
+);
+-- 데이터 삽입
+INSERT INTO book VALUES (1,'자바를 찾아서','서울',30000);
+INSERT INTO book VALUES (2,'도시','천국',10000);
+INSERT INTO book VALUES (3,'하늘','신라',50000);
+ COMMIT;
+
+-- 프로시저 생성
+동일한 도서가 있는지 점검한 후 동일한 도서가 없으면 삽입하고 
+동일한 도서가 있으면 가격을 업데이트하는 프로시저를 작성하시오. (book_info)
+CREATE OR REPLACE PROCEDURE BOOK_INFO(
+    mybookid book.bookid%TYPE,
+    mybookname book.bookname%TYPE,
+    mypublisher book.publisher%TYPE,
+    myprice book.price%TYPE
+)
+IS
+    mycount NUMBER;
+BEGIN
+    SELECT COUNT(*)  INTO mycount FROM book WHERE bookname = mybookname;
+    IF mycount != 0 THEN
+       -- 동일한 도서가 있으면 가격을 업데이트
+        UPDATE book  SET price = myprice
+        WHERE bookname = mybookname;
+        COMMIT;
+    ELSE
+        -- 동일한 도서가 없으면 삽입
+         INSERT INTO book (bookid, bookname, publisher, price)
+         VALUES (mybookid, mybookname, mypublisher, myprice);
+         COMMIT;
+    END IF;
+EXCEPTION WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROR!');
+        ROLLBACK;
+END;
+
+EXEC BOOK_INFO(4,'스포츠','쿨서울',20000);
+EXEC BOOK_INFO(5,'도시' , '천국' ,50000);
