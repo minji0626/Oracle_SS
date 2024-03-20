@@ -759,31 +759,41 @@ END employee_pkg;
 
 본문 생성
 CREATE OR REPLACE PACKAGE BODY employee_pkg AS
-   PROCEDURE print_ename(p_empno NUMBER) IS
-   e_name emp.ename%TYPE;
+   PROCEDURE print_ename(p_empno NUMBER) IS -- name을 불러옵니다
+   e_name emp.ename%TYPE; --emp테이블의 ename과 같은 타입을 사용합니다
 BEGIN 
-   SELECT ename
-   INTO e_name
-   FROM emp
-   WHERE empno = p_empno;
-   DBMS_OUTPUT.PUT_LINE(e_name);
-EXCEPTION WHEN NO_DATA_FOUND THEN
-   DBMS_OUTPUT.PUT_LINE('Invalid Employee Number');
+   SELECT ename --ename을 불러오고
+   INTO e_name --e_name에 삽입 시키세요
+   FROM emp -- emp테이블에서 불러오세요
+   WHERE empno = p_empno; -- empno(사원번호)가 파라미터의 p_empno와 같습니다.
+   DBMS_OUTPUT.PUT_LINE(e_name); -- e_name을 출력하세요
+EXCEPTION WHEN NO_DATA_FOUND THEN -- 그러나 예외 상황인 입력한 사원번호(empno)가 emp 테이블에 등록되지 않은 데이터라면
+   DBMS_OUTPUT.PUT_LINE('Invalid Employee Number'); -- 이 문구를 출력하세요
 END print_ename;
    
-   PROCEDURE print_sal(p_empno NUMBER) IS
-   e_sal emp.sal%TYPE;
+   PROCEDURE print_sal(p_empno NUMBER) IS-- 급여를 출력하겠습니다
+   e_sal emp.sal%TYPE; -- emp테이블의 sal 과 같은 타입을 사용하세요
 BEGIN 
-   SELECT sal
-   INTO e_sal
-   FROM emp
-   WHERE empno = p_empno;
-   DBMS_OUTPUT.PUT_LINE(e_sal);
-EXCEPTION WHEN NO_DATA_FOUND THEN
-   DBMS_OUTPUT.PUT_LINE('Invalid Employee Number');
+   SELECT sal -- sal을 선택하여 그 값을 불러오고
+   INTO e_sal -- e_sal에 데이터를 삽입시키세요
+   FROM emp -- emp 테이블에서 데이터를 불러오면 됩니다.
+   WHERE empno = p_empno; -- 사원번호(empno)는 p_empno의 값과 같습니다.
+   DBMS_OUTPUT.PUT_LINE(e_sal); -- e_sal에 저장한 값을 출력하세요.
+EXCEPTION WHEN NO_DATA_FOUND THEN -- 예외상황인 사원번호(empno)가 emp 테이블에 없는 데이터라면
+   DBMS_OUTPUT.PUT_LINE('Invalid Employee Number'); -- 이 문구를 출력하세요
 END print_sal;
 END employee_pkg;
 
 실행
 EXEC EMPLOYEE_PKG.PRINT_ENAME(8000);
 EXEC EMPLOYEE_PKG.PRINT_SAL(7369);
+
+트리거 (Trigger)
+트리거는 데이터의 변경(INSERT, DELETE, UPDATE)문이 실행될 때 자동으로 같이 실행되는 프로시저를 말한다.
+오라클은 기본적으로 실행 전(BEFORE)과 실행 후(AFTER) 트리거를 지원한다.
+
+CREATE OR REPLACE TRIGGER print_message
+AFTER INSERT ON dept
+BEGIN
+DBMS_OUTPUT.PUT_LINE('dept 테이블에 정상적으로 데이터가 추가되었습니다.');
+END;
