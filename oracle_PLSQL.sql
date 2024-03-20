@@ -745,3 +745,45 @@ EXEC BOOK_INFO(4,'스포츠','쿨서울',20000); -- 삽입
 EXEC BOOK_INFO(5,'도시' , '천국' ,50000); -- 가격 변경
 EXEC BOOK_INFO(4,'도시2','천국',50000); -- 오류 발생
 
+
+패키지(Package)
+패키지는 업무와 관련된 Stored Procedure 및 Stored Function을 관리하고, 
+이를 패키지 단위로 배포할 때 유용하게 사용된다.
+패키지는 선언부와 본문으로 구분한다.
+
+선언부 생성
+CREATE OR REPLACE PACKAGE employee_pkg AS
+   PROCEDURE print_ename(p_empno NUMBER);
+   PROCEDURE print_sal(p_empno NUMBER);
+END employee_pkg;
+
+본문 생성
+CREATE OR REPLACE PACKAGE BODY employee_pkg AS
+   PROCEDURE print_ename(p_empno NUMBER) IS
+   e_name emp.ename%TYPE;
+BEGIN 
+   SELECT ename
+   INTO e_name
+   FROM emp
+   WHERE empno = p_empno;
+   DBMS_OUTPUT.PUT_LINE(e_name);
+EXCEPTION WHEN NO_DATA_FOUND THEN
+   DBMS_OUTPUT.PUT_LINE('Invalid Employee Number');
+END print_ename;
+   
+   PROCEDURE print_sal(p_empno NUMBER) IS
+   e_sal emp.sal%TYPE;
+BEGIN 
+   SELECT sal
+   INTO e_sal
+   FROM emp
+   WHERE empno = p_empno;
+   DBMS_OUTPUT.PUT_LINE(e_sal);
+EXCEPTION WHEN NO_DATA_FOUND THEN
+   DBMS_OUTPUT.PUT_LINE('Invalid Employee Number');
+END print_sal;
+END employee_pkg;
+
+실행
+EXEC EMPLOYEE_PKG.PRINT_ENAME(8000);
+EXEC EMPLOYEE_PKG.PRINT_SAL(7369);
